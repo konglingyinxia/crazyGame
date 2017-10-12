@@ -1,8 +1,8 @@
 //created on: 28.05.2015
-package beimi.user
+package com.crazy.user
 
 //list any import classes here.
-import com.beimi.web.model.User
+import com.crazy.web.model.User
 
 //declare any global variables here
 
