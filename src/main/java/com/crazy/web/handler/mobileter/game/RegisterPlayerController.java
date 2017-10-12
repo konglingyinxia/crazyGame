@@ -134,6 +134,7 @@ public class RegisterPlayerController extends Handler {
 				playUser.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
 				CacheHelper.getApiUserCacheBean().put(playUser.getId(), playUser, userToken.getOrgi());
+				session.setAttribute("mgPlayUser",playUser);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

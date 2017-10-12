@@ -21,25 +21,25 @@
          * http://game.bizpartner.cn/wxController/wxLoginHtml
          * http://192.168.199.203/wxController/wxLoginHtml
          */
-        mui.post("getWxConfig",{url:"http://game.bizpartner.cn/wxController/wxLoginHtml1"},function(data){
-            wx.config({
-                debug: true,
-                appId: data.appId,
-                timestamp: data.timestamp,
-                nonceStr: data.nonceStr,
-                signature: data.signature,
-                jsApiList: [
-                    'checkJsApi',
-                    'onMenuShareTimeline',
-                    'onMenuShareAppMessage'
-                ]
-            });
-            var head= document.getElementsByTagName('body')[0];
-            var zepto = document.createElement('script');
-            zepto.type= 'text/javascript';
-            zepto.src= 'http://203.195.235.76/jssdk/js/zepto.min.js';
-            head.appendChild(zepto);
-        });
+//        mui.post("getWxConfig",{url:"http://game.bizpartner.cn/wxController/wxLoginHtml1"},function(data){
+//            wx.config({
+//                debug: true,
+//                appId: data.appId,
+//                timestamp: data.timestamp,
+//                nonceStr: data.nonceStr,
+//                signature: data.signature,
+//                jsApiList: [
+//                    'checkJsApi',
+//                    'onMenuShareTimeline',
+//                    'onMenuShareAppMessage'
+//                ]
+//            });
+//            var head= document.getElementsByTagName('body')[0];
+//            var zepto = document.createElement('script');
+//            zepto.type= 'text/javascript';
+//            zepto.src= 'http://203.195.235.76/jssdk/js/zepto.min.js';
+//            head.appendChild(zepto);
+//        });
     </script>
 </head>
 <body>
