@@ -14,6 +14,6 @@ public abstract interface PlayUserClientRepository  extends JpaRepository<PlayUs
   public abstract int countByUsername(String username);
   
   public abstract Page<PlayUserClient> findByDatastatus(boolean datastatus, String orgi, Pageable paramPageable);
-
+  
   public abstract Page<PlayUserClient> findByDatastatusAndUsername(boolean datastatus, String orgi, String username, Pageable paramPageable);
 }

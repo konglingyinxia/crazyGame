@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 
@@ -91,7 +92,13 @@ public class PlayUser implements UserEvent , java.io.Serializable{
 	private int cards;			//房卡数量
 	private int goldcoins;		//金币数量
 	private int diamonds;		//钻石数量
-	
+	private String headimgurl;// 头像
+	private String invitationcode;// 个人邀请码
+	private String pinvitationcode;// 他人邀请码
+
+	@Column(name = "TRT_PROFIT")
+	private BigDecimal trtProfit;// 分润剩余总额
+	private String token;// 识别码
 	/**
 	 *对金币+房卡+id进行RSA签名 ， 任何对ID,cards ， goldcoins 进行修改之前，都需要做签名验证，
 	 *签名验证通过后才能进行修改，修改之后，重新签名 
@@ -130,6 +137,9 @@ public class PlayUser implements UserEvent , java.io.Serializable{
 		this.password = password;
 	}
 
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
+	}
 
 	public String getEmail() {
 		return email;
@@ -603,5 +613,45 @@ public class PlayUser implements UserEvent , java.io.Serializable{
 
 	public void setPlayertype(String playertype) {
 		this.playertype = playertype;
+	}
+
+	public String getHeadimgurl() {
+		return headimgurl;
+	}
+
+	public void setHeadimgurl(String headimgurl) {
+		this.headimgurl = headimgurl;
+	}
+
+	public String getInvitationcode() {
+		return invitationcode;
+	}
+
+	public void setInvitationcode(String invitationcode) {
+		this.invitationcode = invitationcode;
+	}
+
+	public String getPinvitationcode() {
+		return pinvitationcode;
+	}
+
+	public void setPinvitationcode(String pinvitationcode) {
+		this.pinvitationcode = pinvitationcode;
+	}
+
+	public BigDecimal getTrtProfit() {
+		return trtProfit;
+	}
+
+	public void setTrtProfit(BigDecimal trtProfit) {
+		this.trtProfit = trtProfit;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }
