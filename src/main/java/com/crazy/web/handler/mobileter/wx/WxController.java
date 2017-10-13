@@ -99,8 +99,8 @@ public class WxController {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		try {
 			if (StringUtils.isNotBlank(userId)) {
-				PlayUser playUser = (PlayUser) CacheHelper.getApiUserCacheBean().getCacheObject(userId, BMDataContext.SYSTEM_ORGI) ;
-				if ( null != playUser ) {
+				PlayUser playUser = (PlayUser) CacheHelper.getApiUserCacheBean().getCacheObject(userId, BMDataContext.SYSTEM_ORGI);
+				if (null != playUser) {
 					dataMap.put("token", playUser.getToken());
 					dataMap.put("playUser", playUser);
 					dataMap.put("success", true);
@@ -284,6 +284,15 @@ public class WxController {
 			BigDecimal zjTrtProfit = zjPlayUser.getTrtProfit();
 			zjTrtProfit = zjTrtProfit.add(BigDecimal.valueOf(ziFenrun));
 			playUserRes.setCardsAndTrtProfitById(cards, zjTrtProfit, playUser.getId());// 修改充值完的房卡数量
+
+			// 保存自己分润历史
+			RunHistory zjRunHistory = new RunHistory();
+			zjRunHistory.setUserName(zjPlayUser.getNickname());
+			zjRunHistory.setInvitationCode(zjPlayUser.getInvitationcode());
+			zjRunHistory.setGetProfitAmount(BigDecimal.valueOf(ziFenrun));
+			zjRunHistory.setSourceId(zjPlayUser.getId());
+			zjRunHistory.setSourceName(zjPlayUser.getNickname());
+			runHistoryRepository.saveAndFlush(zjRunHistory);
 
 			// 计算分润
 			if (null != zjPlayUser.getPinvitationcode()) {// 存在直接上级
