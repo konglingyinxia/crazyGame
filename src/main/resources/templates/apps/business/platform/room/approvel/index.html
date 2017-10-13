@@ -1,0 +1,146 @@
+<div class="layui-layout layui-layout-content">
+    <div class="layui-side layui-beimi-left">
+        <div class="layui-side-scroll">
+            <#include "/apps/business/platform/include/left.html"/>
+        </div>
+    </div>
+    <div class="layui-body">
+        <div class="layui-side-scroll">
+            <div class="row">
+                <h1 class="site-h1" style="background-color:#FFFFFF;">
+                    提现审批后台管理界面
+                </h1>
+                <div class="col-lg-12">
+                    <div class="user_online" style="height:60px;">
+                        <form class="layui-form" action="">
+                            <div class="layui-form-item" style="position: relative">
+                                <div class="layui-inline" style="margin-top: 10px;">
+                                    <label class="layui-form-label" style="padding-left: 0px;width: 65px;">用户名:</label>
+                                    <div class="layui-input-inline" style="width: 170px;">
+                                        <input type="text" id="rechange_name" name="title" required  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin-top: 10px;">
+                                    <label class="layui-form-label" style="padding-left: 0px;width: 75px;">金额:</label>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_min" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid">-</div>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_max" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin-top: 10px;">
+                                    <label class="layui-form-label" style="padding-left: 0px;width: 75px;">申请时间:</label>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_min" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid">-</div>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_max" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin:10px -60px;">
+                                    <label class="layui-form-label">状态</label>
+                                    <div class="layui-input-inline">
+                                        <select name="quiz1">
+                                            <option value="3" selected="">全部</option>
+                                            <option value="1">审核</option>
+                                            <option value="0">未审核</option>
+                                        </select><div class="layui-unselect layui-form-select"><div class="layui-select-title"><input type="text" placeholder="请选择" value="全部" readonly="" class="layui-input layui-unselect"><i class="layui-edge"></i></div><dl class="layui-anim layui-anim-upbit" style=""><dd lay-value="全部" class="layui-this">全部</dd><dd lay-value="审核" class="">审核</dd><dd lay-value="未审核" class="">未审核</dd></dl></div>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin: 10px 100px;">
+                                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="queryTj();" type="button" style="display: block;width:70px;border-radius: 3px">
+                                        查询
+                                    </button>
+                                </div>
+                                <div class="layui-btn-group demoTable" style="margin-left: -50px; width: 70px">
+                                    <button class="layui-btn" data-type="getCheckLength">审核通过</button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <table id="recharge_table" lay-filter="test">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    //后台数据
+    layui.use('table', function(){
+        var table = layui.table;
+    });
+
+    //搜索框代码
+    var table;
+    var tableIns;
+    //后台数据
+    layui.use('table', function(){
+        table = layui.table;
+        tableIns = table.render({
+            elem:'#recharge_table',
+            url : '/presentapp/findPresentappList?userName=',
+            page:true,
+            id:'test',
+            cols:  [[ //标题栏
+                {checkbox: true, LAY_CHECKED: false},
+                {field:'id', width:220 , title:'编码'},
+                {field:'applicationNum',width:220 , title:'申请单号'},
+                {field:'userName',width:220 , title:'用户名'},
+                {field:'invitationCode',width:220 , title:'邀请码'},
+                {field:'presentAppTime',width:220 , title:'申请提现时间'},
+                {field:'amountMoney',width:220 , title:'金额'},
+                {field:'preState',width:220 , title:'状态'}
+            ]],
+            done:  function(res, curr, count){
+                var tableTr = document.getElementsByClassName("layui-table")[1].children[0].getElementsByTagName("tr");
+                for(var i = 0; i < tableTr.length; i++){
+                    if(res.data[i].preState == 0){
+                        tableTr[i].children[7].children[0].innerHTML = '未审核';
+                    }else{
+                        tableTr[i].children[7].children[0].innerHTML = '审核';
+                    }
+                    //时间设置
+                    tableTr[i].children[5].children[0].innerHTML = formatDateTime(res.data[i].presentAppTime);
+                }
+            }
+        });
+    });
+    function queryTj() {
+        var txt = $("#rechange_name").val();
+        var vs = $('select  option:selected').val();
+        tableIns.reload({
+            url: '/presentapp/findPresentappList',
+            where: { //设定异步数据接口的额外参数，任意设
+                userName: txt,
+                preState: vs
+            }
+        });
+    }
+
+    //时间转换js
+    function formatDateTime(inputTime) {
+        var date = new Date(inputTime);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+    };
+</script>
+
