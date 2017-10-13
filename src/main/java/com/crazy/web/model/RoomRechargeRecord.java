@@ -69,6 +69,18 @@ public class RoomRechargeRecord implements java.io.Serializable {
 	private BigDecimal indirectTheLastAmount;
 
 	/**
+	 * 扣除分润后金额
+	 */
+	@Column(name = "ADTAO_PROFIT")
+	private BigDecimal adtaoProfit;
+
+	/**
+	 * 支付方式
+	 */
+	@Column(name = "PAYMENT_METHOD")
+	private String paymentMethod;
+
+	/**
 	 * 创建时间
 	 */
 	@Column(name = "create_time")
@@ -164,4 +176,19 @@ public class RoomRechargeRecord implements java.io.Serializable {
 		this.isDel = isDel;
 	}
 
+	public BigDecimal getAdtaoProfit() {
+		return adtaoProfit;
+	}
+
+	public void setAdtaoProfit(BigDecimal adtaoProfit) {
+		this.adtaoProfit = adtaoProfit;
+	}
+
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
 }

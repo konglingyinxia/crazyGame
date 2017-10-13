@@ -55,6 +55,12 @@ public class ProManagement implements java.io.Serializable {
 	private Date appTime;
 
 	/**
+	 * 类型（打款）
+	 */
+	@Column(name = "PRO_TYPE")
+	private String proType;
+
+	/**
 	 * 分润剩余总额
 	 */
 	@Column(name = "TRT_PROFIT")
@@ -139,4 +145,13 @@ public class ProManagement implements java.io.Serializable {
 	public void setIsDel(int isDel) {
 		this.isDel = isDel;
 	}
+
+	public String getProType() {
+		return proType;
+	}
+
+	public void setProType(String proType) {
+		this.proType = proType;
+	}
+
 }

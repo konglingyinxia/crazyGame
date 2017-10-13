@@ -8,12 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.crazy.util.wx.ConfigUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,23 +26,19 @@ import com.alibaba.fastjson.JSONObject;
 import com.crazy.core.BMDataContext;
 import com.crazy.util.BeanUtils;
 import com.crazy.util.CacheConfigTools;
-import com.crazy.util.IP;
-import com.crazy.util.IPTools;
 import com.crazy.util.UKTools;
 import com.crazy.util.cache.CacheHelper;
+import com.crazy.util.wx.ConfigUtil;
 import com.crazy.util.wx.WxUserInfo;
 import com.crazy.web.handler.Handler;
 import com.crazy.web.model.AccountConfig;
 import com.crazy.web.model.PlayUser;
-import com.crazy.web.model.PlayUserClient;
 import com.crazy.web.model.RoomRechargeRecord;
 import com.crazy.web.model.Token;
 import com.crazy.web.model.mobileter.murecharge.vo.PlayUserVo;
-import com.crazy.web.service.repository.es.PlayUserClientESRepository;
 import com.crazy.web.service.repository.es.TokenESRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
 import com.crazy.web.service.repository.jpa.RoomRechargeRecordRepository;
-import com.crazy.web.service.repository.jpa.TokenRepository;
 import com.crazy.web.service.repository.spec.DefaultSpecification;
 import com.google.gson.Gson;
 
@@ -61,12 +54,6 @@ public class RegisterPlayerController extends Handler {
 
 	@Autowired
 	private PlayUserRepository playUserRes;
-
-	@Autowired
-	private TokenRepository tokenRes;
-
-	@Autowired
-	private PlayUserClientESRepository playUserClientRes;
 
 	@Autowired
 	private TokenESRepository tokenESRes;
@@ -113,10 +100,10 @@ public class RegisterPlayerController extends Handler {
 					}
 				}
 				String ip = UKTools.getIpAddr(request);
-//				IP ipdata = IPTools.getInstance().findGeography(ip);
+				// IP ipdata = IPTools.getInstance().findGeography(ip);
 				userToken = new Token();
 				userToken.setIp(ip);
-//				userToken.setRegion(ipdata.getProvince() + ipdata.getCity());
+				// userToken.setRegion(ipdata.getProvince() + ipdata.getCity());
 				userToken.setId(UKTools.getUUID());
 				userToken.setUserid(playUser.getId());
 				userToken.setCreatetime(new Date());
@@ -134,7 +121,7 @@ public class RegisterPlayerController extends Handler {
 				playUser.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
 				CacheHelper.getApiUserCacheBean().put(playUser.getId(), playUser, userToken.getOrgi());
-				session.setAttribute("mgPlayUser",playUser);
+				session.setAttribute("mgPlayUser", playUser);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

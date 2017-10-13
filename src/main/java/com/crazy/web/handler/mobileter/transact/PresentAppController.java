@@ -160,6 +160,7 @@ public class PresentAppController extends Handler {
 				pm.setUserName(presentApp.getUserName());
 				pm.setInvitationCode(presentApp.getInvitationCode());
 				pm.setAmountMoney(presentApp.getAmountMoney());
+				pm.setProType("微信");
 				pm.setTrtProfit(zjTrtProfit);
 				proManagementRepository.saveAndFlush(pm);
 			}

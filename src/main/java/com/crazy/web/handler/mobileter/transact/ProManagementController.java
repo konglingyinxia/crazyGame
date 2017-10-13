@@ -1,5 +1,6 @@
 package com.crazy.web.handler.mobileter.transact;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,14 +47,22 @@ public class ProManagementController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/findProManagementList")
-	public JSONObject findProManagementList(ProManagement proManagement, Integer page, Integer limit) {
+	public JSONObject findProManagementList(ProManagement proManagement, Integer page, Integer limit, Date startDate, Date endDate) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
 			Pageable pageable = new PageRequest(page - 1, limit);
 			DefaultSpecification<ProManagement> spec = new DefaultSpecification<ProManagement>();
 			if (null != proManagement.getUserName() && !proManagement.getUserName().equals("")) spec.setParams("userName", "like", "%" + proManagement.getUserName() + "%");
+
 			if (null != proManagement.getInvitationCode() && !proManagement.getInvitationCode().equals(""))
 				spec.setParams("invitationCode", "eq", proManagement.getInvitationCode());
+
+			if (null != startDate) spec.setParams("appTime", ">=", startDate);
+
+			if (null != endDate) spec.setParams("appTime", "<=", endDate);
+
+			if (null != proManagement.getProType() && !proManagement.getProType().equals("")) spec.setParams("proType", "eq", proManagement.getProType());
+
 			Page<ProManagement> p = proManagementRepository.findAll(spec, pageable);
 			dataMap.put("data", p.getContent());
 			dataMap.put("count", p.getTotalElements());

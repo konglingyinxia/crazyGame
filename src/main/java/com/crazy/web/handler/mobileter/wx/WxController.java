@@ -271,6 +271,7 @@ public class WxController {
 	public JSONObject rechargeManagement(PlayUser playUser, int payAmount, int roomCount) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
+		Double adtaoProfit = Double.valueOf(payAmount / 100);
 		try {
 			PlayUser zjPlayUser = playUserRes.findById(playUser.getId());
 
@@ -278,9 +279,11 @@ public class WxController {
 			roomRechargeRecord.setInvitationCode(zjPlayUser.getInvitationcode());
 			roomRechargeRecord.setRoomCount(roomCount);
 			roomRechargeRecord.setPayAmount(BigDecimal.valueOf(Double.valueOf(payAmount / 100)));
+			roomRechargeRecord.setPaymentMethod("微信");
 
 			int cards = zjPlayUser.getCards() + roomCount;
 			Double ziFenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJDZ;// 这笔交易直接自己分润金额
+			adtaoProfit = adtaoProfit - ziFenrun;
 			BigDecimal zjTrtProfit = zjPlayUser.getTrtProfit();
 			zjTrtProfit = zjTrtProfit.add(BigDecimal.valueOf(ziFenrun));
 			playUserRes.setCardsAndTrtProfitById(cards, zjTrtProfit, playUser.getId());// 修改充值完的房卡数量
@@ -298,6 +301,7 @@ public class WxController {
 			if (null != zjPlayUser.getPinvitationcode()) {// 存在直接上级
 				PlayUser zPlayUser = playUserRes.findByInvitationcode(zjPlayUser.getPinvitationcode());
 				Double fenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJFR;// 这笔交易直接上级分润金额
+				adtaoProfit = adtaoProfit - fenrun;
 				BigDecimal trtProfit = zPlayUser.getTrtProfit();
 				trtProfit = trtProfit.add(BigDecimal.valueOf(fenrun));// 这笔交易直接上级分润金额加上总额
 				playUserRes.setTrtProfitById(trtProfit, zPlayUser.getId());
@@ -315,6 +319,7 @@ public class WxController {
 				if (null != zPlayUser.getPinvitationcode()) {// 存在间接接上级
 					PlayUser jPlayUser = playUserRes.findByInvitationcode(zPlayUser.getPinvitationcode());
 					Double jjFenrun = Double.valueOf(payAmount / 100) * StateUtils.JJFR;// 这笔交易间接上级分润金额
+					adtaoProfit = adtaoProfit - jjFenrun;
 					BigDecimal jjTrtProfit = jPlayUser.getTrtProfit();
 					jjTrtProfit = jjTrtProfit.add(BigDecimal.valueOf(jjFenrun));// 这笔交易间接上级分润金额加上总额
 					playUserRes.setTrtProfitById(trtProfit, jPlayUser.getId());
@@ -331,6 +336,7 @@ public class WxController {
 				}
 			}
 
+			roomRechargeRecord.setAdtaoProfit(BigDecimal.valueOf(adtaoProfit));
 			// 保存房卡充值历史
 			roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
 		} catch (Exception e) {
