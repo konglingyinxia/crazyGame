@@ -268,7 +268,7 @@ public class WxController {
 	 */
 	@ResponseBody
 	@RequestMapping("/rechargeManagement")
-	public JSONObject rechargeManagement(PlayUser playUser, Double payAmount, int roomCount) {
+	public JSONObject rechargeManagement(PlayUser playUser, int payAmount, int roomCount) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
 		try {
@@ -277,10 +277,10 @@ public class WxController {
 			roomRechargeRecord.setUserName(zjPlayUser.getNickname());
 			roomRechargeRecord.setInvitationCode(zjPlayUser.getInvitationcode());
 			roomRechargeRecord.setRoomCount(roomCount);
-			roomRechargeRecord.setPayAmount(BigDecimal.valueOf(payAmount));
+			roomRechargeRecord.setPayAmount(BigDecimal.valueOf(Double.valueOf(payAmount / 100)));
 
 			int cards = zjPlayUser.getCards() + roomCount;
-			Double ziFenrun = payAmount * StateUtils.ZJDZ;// 这笔交易直接自己分润金额
+			Double ziFenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJDZ;// 这笔交易直接自己分润金额
 			BigDecimal zjTrtProfit = zjPlayUser.getTrtProfit();
 			zjTrtProfit = zjTrtProfit.add(BigDecimal.valueOf(ziFenrun));
 			playUserRes.setCardsAndTrtProfitById(cards, zjTrtProfit, playUser.getId());// 修改充值完的房卡数量
@@ -297,7 +297,7 @@ public class WxController {
 			// 计算分润
 			if (null != zjPlayUser.getPinvitationcode()) {// 存在直接上级
 				PlayUser zPlayUser = playUserRes.findByInvitationcode(zjPlayUser.getPinvitationcode());
-				Double fenrun = payAmount * StateUtils.ZJFR;// 这笔交易直接上级分润金额
+				Double fenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJFR;// 这笔交易直接上级分润金额
 				BigDecimal trtProfit = zPlayUser.getTrtProfit();
 				trtProfit = trtProfit.add(BigDecimal.valueOf(fenrun));// 这笔交易直接上级分润金额加上总额
 				playUserRes.setTrtProfitById(trtProfit, zPlayUser.getId());
@@ -314,7 +314,7 @@ public class WxController {
 
 				if (null != zPlayUser.getPinvitationcode()) {// 存在间接接上级
 					PlayUser jPlayUser = playUserRes.findByInvitationcode(zPlayUser.getPinvitationcode());
-					Double jjFenrun = payAmount * StateUtils.JJFR;// 这笔交易间接上级分润金额
+					Double jjFenrun = Double.valueOf(payAmount / 100) * StateUtils.JJFR;// 这笔交易间接上级分润金额
 					BigDecimal jjTrtProfit = jPlayUser.getTrtProfit();
 					jjTrtProfit = jjTrtProfit.add(BigDecimal.valueOf(jjFenrun));// 这笔交易间接上级分润金额加上总额
 					playUserRes.setTrtProfitById(trtProfit, jPlayUser.getId());
