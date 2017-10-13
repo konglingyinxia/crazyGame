@@ -1,75 +1,134 @@
+<script>
+	//	$.post("../../registerPlayer/findRegisterPlayerList",{page:0,limit:20},function(data){
+	//			var tablebox =document.getElementById("box").getAttribute("lay-data");
+	//			var tableboxUrl = "../../registerPlayer/findRegisterPlayerList?page=0&limit=20";
+	//			document.getElementById("box").setAttribute("lay-data","{height:640,url:'"+tableboxUrl+"', page:true, id:'test'}");
+	//	});
+
+</script>
 <div class="layui-layout layui-layout-content">
 	<div class="layui-side layui-beimi-left">
 		<div class="layui-side-scroll">
-		<#include "/apps/business/platform/include/left.html"/></div>
+			<#include "/apps/business/platform/include/left.html"/>
+		</div>
 	</div>
 	<div class="layui-body">
 		<div class="layui-side-scroll">
 			<div class="row">
-				<div class="col-lg-12">
-					<h1 class="site-h1" style="background-color:#FFFFFF;">
-						玩家列表<#if playersList??>（${playersList.totalElements}）</#if>
-					</h1>
-					<div class="row" style="padding:5px;">
-						<div class="col-lg-12">
-							<#if playersList?? && playersList.content??>
-							<table class="layui-table" lay-skin="line">
-								<thead>
-									<tr>
-										<th>用户名</th>
-										<th>注册时间</th>
-										<th>地区</th>
-										<th>金币</th>
-										<th>房卡</th>
-										<th>钻石</th>
-										<th>在线</th>
-										<th>系统</th>
-										<th>浏览器</th>
-										<th>有效账号</th>
-										<th style="white-space:nowrap;width:1%;" nowrap="nowrap">操作</th>
-									</tr>
-								</thead>
-								<tbody>
-									<#list playersList.content as player>
-									<tr>
-										<td>${player.username!''}</td>
-										<td>${player.createtime?string('yyyy-MM-dd HH:mm:ss')}</td>
-										<td>${player.country!''}</td>
-										<td>${player.goldcoins!''}</td>
-										<td>${player.cards!''}</td>
-										<td>${player.diamonds!''}</td>
-										<td>
-											<#if player.online> 
-											<i class="layui-icon" style="color:#19a55d;">&#xe618;</i> 
-											</#if>
-										</td>
-										<td>${player.ostype!''}</td>
-										<td>${player.browser!''}</td>
-										<td>
-											<#if player.disabled == false> 
-											<i class="layui-icon" style="color:#19a55d;">&#xe618;</i> 
-											</#if>
-										</td>
-										<td style="white-space:nowrap;width:1%;" nowrap="nowrap">
-											<a href="/apps/platform/gameusers/edit.html?id=${player.id!''}" data-toggle="ajax" data-width="550" data-height="400" data-title="编辑用户信息"> <i class="layui-icon">&#xe642;</i>
-												编辑
-											</a> 
-										</td>
-									</tr>
-									</#list>
-								</tbody>
-							</table>
-							</#if>
-						</div> 	   
+				<h1 class="site-h1" style="background-color:#FFFFFF;">
+					注册玩家列表
+				</h1>
+				<div class="row" style="padding:5px;">
+					<div class="col-lg-12">
+						<div class="user_online" style="height:60px;">
+							<form class="layui-form" action="">
+								<div class="layui-form-item" style="position: relative">
+									<div class="layui-inline" style="margin-top: 10px;">
+										<label class="layui-form-label" style="padding-left: 0px;width: 65px;">用户名:</label>
+										<div class="layui-input-inline" style="width: 170px;">
+											<input type="text" id="rechange_name" name="title" required  lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+										</div>
+									</div>
+									<div class="layui-inline" style="margin-top: 10px;">
+										<button class="layui-btn layui-btn-radius layui-btn-normal" onclick="queryTj();" type="button" style="display: block;width:70px;border-radius: 3px">
+											查询
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+						<table id="recharge_table" lay-filter="test">
+						</table>
 					</div>
-				</div>	
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
+</div>
 <script>
-	layui.use('element', function() {
-		var element = layui.element;
+	//后台数据
+	layui.use('table', function(){
+		var table = layui.table;
+	});
+
+	//搜索框代码
+	var table;
+	var tableIns;
+	//后台数据
+	layui.use('table', function(){
+		table = layui.table;
+		tableIns = table.render({
+			elem:'#recharge_table',
+			url:'/registerPlayer/findRegisterPlayerList',
+			page:true,
+			id:'test',
+			cols:  [[ //标题栏
+				{field:'id', width:260 , title:'序号'},
+				{field:'nickname',width:260 , title:'用户名'},
+				{field:'createtime',width:140 , title:'注册时间'},
+				{field:'province',width:160 , title:'地区'},
+				{field:'cards',width:140 , title:'房卡'},
+				{field:'invitationcode',width:180 , title:'邀请码'},
+				{field:'supAccount', width:180 , title:'上家账号'},
+				{field:'subCount', width:180 , title:'下家账号数量'}
+			]]
+		});
+	});
+	function queryTj(){
+		var txt=$("#rechange_name").val();
+		var txtserach=$("#rechange_code").val();
+		tableIns.reload({
+			url:'/registerPlayer/findRegisterPlayerList',
+			where: { //设定异步数据接口的额外参数，任意设
+				nickname:txt,
+				cards: txtserach
+			}
+		});
+	}
+
+	layui.use('table', function(){
+		var table = layui.table;
+		//监听表格复选框选择
+		table.on('checkbox(demo)', function(obj){
+			console.log(obj)
+		});
+		//监听工具条
+		table.on('tool(demo)', function(obj){
+			var data = obj.data;
+			if(obj.event === 'detail'){
+				layer.msg('ID：'+ data.id + ' 的查看操作');
+			} else if(obj.event === 'del'){
+				layer.confirm('真的删除行么', function(index){
+					obj.del();
+					layer.close(index);
+				});
+			} else if(obj.event === 'edit'){
+				layer.alert('编辑行：<br>'+ JSON.stringify(data))
+			}
+		});
+
+		var $ = layui.$, active = {
+			getCheckData: function(){ //获取选中数据
+				var checkStatus = table.checkStatus('idTest')
+						,data = checkStatus.data;
+				layer.alert(JSON.stringify(data));
+			}
+			,getCheckLength: function(){ //获取选中数目
+				var checkStatus = table.checkStatus('idTest')
+						,data = checkStatus.data;
+				layer.msg('选中了：'+ data.length + ' 个');
+			}
+			,isAll: function(){ //验证是否全选
+				var checkStatus = table.checkStatus('idTest');
+				layer.msg(checkStatus.isAll ? '全选': '未全选')
+			}
+		};
+
+		$('.demoTable .layui-btn').on('click', function(){
+			var type = $(this).data('type');
+			active[type] ? active[type].call(this) : '';
+		});
 	});
 </script>
+
