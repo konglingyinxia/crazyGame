@@ -8,10 +8,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 @EnableAutoConfiguration
 @SpringBootApplication
+@EnableScheduling
 @EnableAsync
 @EnableJpaRepositories("com.crazy.web.service.repository.jpa")
 @EnableElasticsearchRepositories("com.crazy.web.service.repository.es")
