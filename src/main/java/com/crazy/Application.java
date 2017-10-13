@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class Application {
     
 	public static void main(String[] args) {
-		System.setProperty("hazelcast.local.localAddress", "10.80.114.163");
+		System.setProperty("hazelcast.local.localAddress", "127.0.0.1");
 		SpringApplication springApplication = new SpringApplication(Application.class) ;
 		springApplication.addListeners(new StartedEventListener());
 		BMDataContext.setApplicationContext(springApplication.run(args));
