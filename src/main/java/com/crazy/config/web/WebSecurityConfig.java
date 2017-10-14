@@ -57,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public Filter apiTokenFilterSecurityInterceptor() throws Exception
     {
-        return new ApiRequestMatchingFilter(new AntPathRequestMatcher[]{new AntPathRequestMatcher("/api/register"),new AntPathRequestMatcher("/api/guest")} , new AntPathRequestMatcher("/api/**"));
+        return new ApiRequestMatchingFilter(new AntPathRequestMatcher[]{new AntPathRequestMatcher("/api/register"),new AntPathRequestMatcher("/api/guest"),new AntPathRequestMatcher("/api/room/**")} , new AntPathRequestMatcher("/api/**"));
     }
     
     private Filter csrfHeaderFilter() {

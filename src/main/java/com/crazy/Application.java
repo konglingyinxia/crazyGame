@@ -22,7 +22,7 @@ public class Application {
 	public static void main(String[] args) {
 		System.setProperty("hazelcast.local.localAddress", "10.80.114.163");
 		SpringApplication springApplication = new SpringApplication(Application.class) ;
-		springApplication.addListeners(new StartedEventListener());
+		//Listener会自动加载的~ springApplication.addListeners(new StartedEventListener());
 		BMDataContext.setApplicationContext(springApplication.run(args));
 	}
 	

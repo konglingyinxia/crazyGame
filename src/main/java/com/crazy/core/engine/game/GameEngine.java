@@ -45,8 +45,24 @@ public class GameEngine {
 				gameRoom = (GameRoom) CacheHelper.getGameRoomCacheBean().getCacheObject(roomid, orgi) ;		//直接加入到 系统缓存 （只有一个地方对GameRoom进行二次写入，避免分布式锁）
 			}else{
 				if(!StringUtils.isBlank(room)){	//房卡游戏 , 创建ROOM
-					gameRoom = this.creatGameRoom(gamePlayway, userid , true) ;
-					CacheHelper.getGameRoomCacheBean().put(gameRoom.getId(), gameRoom, orgi);
+					roomid = (String) CacheHelper.getBoardCacheBean().getCacheObject(room+"RoomCard", orgi) ;
+					if ( null != roomid ) {
+						gameRoom = (GameRoom) CacheHelper.getGameRoomCacheBean().getCacheObject(roomid, orgi) ;		//直接加入到 系统缓存 （只有一个地方对GameRoom进行二次写入，避免分布式锁）
+					}
+					if ( null == gameRoom ) {
+						gameRoom = this.creatGameRoom(gamePlayway, userid, true);
+						CacheHelper.getBoardCacheBean().put(room + "RoomCard", gameRoom.getId(), orgi);
+						CacheHelper.getGameRoomCacheBean().put(gameRoom.getId(), gameRoom, orgi);
+					} else {
+						/**
+						 * 如果当前房间到达了最大玩家数量，则不再加入到 撮合队列
+						 */
+						List<PlayUserClient> playerList = CacheHelper.getGamePlayerCacheBean().getCacheObject(gameRoom.getId(), gameRoom.getOrgi()) ;
+						if((playerList.size() + 1) < gamePlayway.getPlayers() && CacheHelper.getExpireCache().get(gameRoom.getId()) != null){
+							CacheHelper.getQueneCache().offer(gameRoom.getPlayway() , gameRoom, orgi);	//未达到最大玩家数量，加入到游戏撮合 队列，继续撮合
+						}
+						playUser.setPlayerindex(System.currentTimeMillis());//从后往前坐，房主进入以后优先坐在 首位
+					}
 				}else{	//
 					/**
 					 * 大厅游戏 ， 撮合游戏 , 发送异步消息，通知RingBuffer进行游戏撮合，撮合算法描述如下：
