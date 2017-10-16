@@ -97,11 +97,12 @@ public class WxController {
 
 	/**
 	 * 微信支付界面
+	 * 
 	 * @param map
-     * @return
-     */
+	 * @return
+	 */
 	@RequestMapping(value = "/wxPayHtml")
-	public String wxPayHtml(ModelMap map,String roomNum,String userId) {
+	public String wxPayHtml(ModelMap map, String roomNum, String userId) {
 		map.addAttribute("userId", userId);
 		map.addAttribute("roomNum", roomNum);
 		return "/apps/business/platform/game/wxGetCode/WxPay";
@@ -216,14 +217,14 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWXPayXmlH5")
 	@ResponseBody
-	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum,String userId) {
+	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum, String userId) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户openid
 		String openid = playUserRes.findById(userId).getOpenid();
-//		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";
-		if(openid == null){
-			json.put("status",false);
-			json.put("msg","用户不存在！");
+		// String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";
+		if (openid == null) {
+			json.put("status", false);
+			json.put("msg", "用户不存在！");
 			return json;
 		}
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
@@ -231,10 +232,10 @@ public class WxController {
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
 		out_trade_no += formatter.format(new Date());// 充值订单号时间戳
 		int finalmoney = 0;
-		if(roomNum == 4){
-			finalmoney = (int) (ConfigUtil.ROOM_4*100);
-		}else if(roomNum == 8){
-			finalmoney = (int) (ConfigUtil.ROOM_8*100);
+		if (roomNum == 4) {
+			finalmoney = (int) (ConfigUtil.ROOM_4 * 100);
+		} else if (roomNum == 8) {
+			finalmoney = (int) (ConfigUtil.ROOM_8 * 100);
 		}
 		// 金额转化为分为单位
 		request.getSession();
@@ -274,8 +275,8 @@ public class WxController {
 		try {
 			prepay_id = new GetWxOrderno().getPayNo(createOrderURL, xml);
 			if (prepay_id.equals("")) {
-				json.put("status",false);
-				json.put("msg","订单支付异常！");
+				json.put("status", false);
+				json.put("msg", "订单支付异常！");
 				return json;
 			}
 		} catch (Exception e1) {
@@ -315,12 +316,12 @@ public class WxController {
 	 */
 	@ResponseBody
 	@RequestMapping("/rechargeManagement")
-	public JSONObject rechargeManagement(@SessionAttribute("mgPlayUser") PlayUser playUser, int payAmount, int roomCount) {
+	public JSONObject rechargeManagement(@SessionAttribute("mgPlayUser") PlayUser playUser, int roomCount) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
 		Bill bill = new Bill();
 
-		Double adtaoProfit = Double.valueOf(payAmount / 100);
+		Double adtaoProfit = Double.valueOf(roomCount * ConfigUtil.ROOM);
 		Money money = moneyRepository.findByIdAndType(1, 1);
 		BigDecimal ye = money.getBalance();
 		ye = ye.add(BigDecimal.valueOf(adtaoProfit));// 算出账户余额
@@ -338,11 +339,11 @@ public class WxController {
 			roomRechargeRecord.setUserName(zjPlayUser.getNickname());
 			roomRechargeRecord.setInvitationCode(zjPlayUser.getInvitationcode());
 			roomRechargeRecord.setRoomCount(roomCount);
-			roomRechargeRecord.setPayAmount(BigDecimal.valueOf(Double.valueOf(payAmount / 100)));
+			roomRechargeRecord.setPayAmount(BigDecimal.valueOf(adtaoProfit));
 			roomRechargeRecord.setPaymentMethod("微信");
 
 			int cards = zjPlayUser.getCards() + roomCount;
-			Double ziFenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJDZ;// 这笔交易直接自己分润金额
+			Double ziFenrun = adtaoProfit * StateUtils.ZJDZ;// 这笔交易直接自己分润金额
 			adtaoProfit = adtaoProfit - ziFenrun;
 			BigDecimal zjTrtProfit = zjPlayUser.getTrtProfit();
 			zjTrtProfit = zjTrtProfit.add(BigDecimal.valueOf(ziFenrun));
@@ -360,7 +361,7 @@ public class WxController {
 			// 计算分润
 			if (null != zjPlayUser.getPinvitationcode()) {// 存在直接上级
 				PlayUser zPlayUser = playUserRes.findByInvitationcode(zjPlayUser.getPinvitationcode());
-				Double fenrun = Double.valueOf(payAmount / 100) * StateUtils.ZJFR;// 这笔交易直接上级分润金额
+				Double fenrun = adtaoProfit * StateUtils.ZJFR;// 这笔交易直接上级分润金额
 				adtaoProfit = adtaoProfit - fenrun;
 				BigDecimal trtProfit = zPlayUser.getTrtProfit();
 				trtProfit = trtProfit.add(BigDecimal.valueOf(fenrun));// 这笔交易直接上级分润金额加上总额
@@ -378,7 +379,7 @@ public class WxController {
 
 				if (null != zPlayUser.getPinvitationcode()) {// 存在间接接上级
 					PlayUser jPlayUser = playUserRes.findByInvitationcode(zPlayUser.getPinvitationcode());
-					Double jjFenrun = Double.valueOf(payAmount / 100) * StateUtils.JJFR;// 这笔交易间接上级分润金额
+					Double jjFenrun = adtaoProfit * StateUtils.JJFR;// 这笔交易间接上级分润金额
 					adtaoProfit = adtaoProfit - jjFenrun;
 					BigDecimal jjTrtProfit = jPlayUser.getTrtProfit();
 					jjTrtProfit = jjTrtProfit.add(BigDecimal.valueOf(jjFenrun));// 这笔交易间接上级分润金额加上总额
