@@ -98,13 +98,11 @@ public class WxController {
 	/**
 	 * 微信支付界面
 	 * @param map
-	 * @param orderprices
      * @return
      */
 	@RequestMapping(value = "/wxPayHtml")
-	public String wxPayHtml(ModelMap map, String orderprices,String roomNum,String userId) {
+	public String wxPayHtml(ModelMap map,String roomNum,String userId) {
 		map.addAttribute("userId", userId);
-		map.addAttribute("orderprices", orderprices);
 		map.addAttribute("roomNum", roomNum);
 		return "/apps/business/platform/game/wxGetCode/WxPay";
 	}
@@ -218,7 +216,7 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWXPayXmlH5")
 	@ResponseBody
-	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int orderprices,String userId) {
+	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum,String userId) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户openid
 		String openid = playUserRes.findById(userId).getOpenid();
@@ -232,8 +230,13 @@ public class WxController {
 		// 生成32位订单号
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
 		out_trade_no += formatter.format(new Date());// 充值订单号时间戳
+		int finalmoney = 0;
+		if(roomNum == 4){
+			finalmoney = (int) (ConfigUtil.ROOM_4*100);
+		}else if(roomNum == 8){
+			finalmoney = (int) (ConfigUtil.ROOM_8*100);
+		}
 		// 金额转化为分为单位
-		int finalmoney = orderprices;
 		request.getSession();
 		// 随机数
 		String nonce_str = PayCommonUtil.CreateNoncestr();

@@ -1,4 +1,7 @@
 package com.crazy.util.wx;
+
+import java.math.BigDecimal;
+
 /**
  *
  *
@@ -35,4 +38,10 @@ public class ConfigUtil {
 
 	/** 跳转游戏界面地址 */
 	public final static String GAME_URL = "http://tssb.bizpartner.cn/main/index.html";
+
+	public final static double ROOM_4 = 0.01;
+
+	public final static double ROOM_8 = 0.02;
+
+	public final static double ROOM_12 = 0.03;
 }
