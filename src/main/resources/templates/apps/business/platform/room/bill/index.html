@@ -39,8 +39,8 @@
                                     <div class="layui-input-inline">
                                         <select id="fangshi">
                                             <option value="0" selected="">全部</option>
-                                            <option value="1">微信</option>
-                                            <option value="2">支付宝</option>
+                                            <option value="微信">微信</option>
+                                            <option value="支付宝">支付宝</option>
                                         </select>
                                     </div>
                                 </div>
@@ -98,12 +98,6 @@
                         tableTr[i].children[2].children[0].innerHTML = '收入';
                     }else{
                         tableTr[i].children[2].children[0].innerHTML = '支出';
-                    }
-
-                    if(res.data[i].billMode == 1){//方式
-                        tableTr[i].children[6].children[0].innerHTML = '微信';
-                    }else{
-                        tableTr[i].children[6].children[0].innerHTML = '支付宝';
                     }
                     //时间设置
                     tableTr[i].children[5].children[0].innerHTML = formatDateTime(res.data[i].billTime);
