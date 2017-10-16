@@ -17,6 +17,7 @@ import com.crazy.web.handler.Handler;
 import com.crazy.web.model.Bill;
 import com.crazy.web.service.repository.jpa.BillRepository;
 import com.crazy.web.service.repository.spec.DefaultSpecification;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * @ClassName: BillController
@@ -30,6 +31,15 @@ public class BillController extends Handler {
 
 	@Autowired
 	private BillRepository billRepository;
+
+	/**
+	 * 跳转账单界面
+	 * @return
+     */
+	@RequestMapping("/billHtml")
+	public ModelAndView billHtml(){
+		return request(super.createAppsTempletResponse("/apps/business/platform/room/bill/index"));
+	}
 
 	/**
 	 * @Title: findBillList

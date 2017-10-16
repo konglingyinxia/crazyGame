@@ -1,0 +1,144 @@
+<div class="layui-layout layui-layout-content">
+    <div class="layui-side layui-beimi-left">
+        <div class="layui-side-scroll">
+            <#include "/apps/business/platform/include/left.html"/>
+        </div>
+    </div>
+    <div class="layui-body">
+        <div class="layui-side-scroll">
+            <div class="row">
+                <h1 class="site-h1" style="background-color:#FFFFFF;">
+                    提现审批后台管理界面
+                </h1>
+                <div class="col-lg-12">
+                    <div class="user_online" style="height:60px;">
+                        <form class="layui-form" action="">
+                            <div class="layui-form-item" style="position: relative">
+                                <div class="layui-inline" style="margin-top: 10px;">
+                                    <label class="layui-form-label" style="padding-left: 0px;width: 75px;">购买时间:</label>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_min" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid">-</div>
+                                    <div class="layui-input-inline" style="width: 100px;">
+                                        <input type="text" name="price_max" placeholder="" autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin:10px -60px;">
+                                    <label class="layui-form-label">类型</label>
+                                    <div class="layui-input-inline">
+                                        <select id="type">
+                                            <option value="0" selected="">全部</option>
+                                            <option value="1">收入</option>
+                                            <option value="2">支出</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin:10px;">
+                                    <label class="layui-form-label">方式</label>
+                                    <div class="layui-input-inline">
+                                        <select id="fangshi">
+                                            <option value="0" selected="">全部</option>
+                                            <option value="1">微信</option>
+                                            <option value="2">支付宝</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline" style="margin: 10px 100px;">
+                                    <button class="layui-btn layui-btn-radius layui-btn-normal" onclick="queryTj();" type="button" style="display: block;width:70px;border-radius: 3px">
+                                        查询
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div>
+                    <table id="recharge_table" lay-filter="test">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    //后台数据
+    layui.use('table', function(){
+        var table = layui.table;
+    });
+
+    //搜索框代码
+    var table;
+    var tableIns;
+    //后台数据
+    layui.use('table', function(){
+        table = layui.table;
+        tableIns = table.render({
+            elem:'#recharge_table',
+            url : '/bill/findBillList',
+            page:true,
+            id:'test',
+            cols:  [[ //标题栏
+                {field:'id', width:220 , title:'序号'},
+                {field:'userName',width:220 , title:'用户名'},
+                {field:'billType',width:220 , title:'类型'},
+                {field:'incomeAmount',width:220 , title:'收入金额'},
+                {field:'expAmount',width:220 , title:'支出金额'},
+                {field:'billTime',width:220 , title:'时间'},
+                {field:'billMode',width:220 , title:'方式'},
+                {field:'accountAmount',width:220 , title:'账户余额'}
+            ]],
+            done:  function(res, curr, count){
+                var tableTr = document.getElementsByClassName("layui-table")[1].children[0].getElementsByTagName("tr");
+                for(var i = 0; i < tableTr.length; i++){
+                    if(res.data[i].billType == 1){//类型
+                        tableTr[i].children[2].children[0].innerHTML = '收入';
+                    }else{
+                        tableTr[i].children[2].children[0].innerHTML = '支出';
+                    }
+
+                    if(res.data[i].billMode == 1){//方式
+                        tableTr[i].children[6].children[0].innerHTML = '微信';
+                    }else{
+                        tableTr[i].children[6].children[0].innerHTML = '支付宝';
+                    }
+                    //时间设置
+                    tableTr[i].children[5].children[0].innerHTML = formatDateTime(res.data[i].billTime);
+                }
+            }
+        });
+    });
+    function queryTj() {
+        var vs = $('select  option:selected').val();//fangshi  $("#type").val()
+        tableIns.reload({
+            url: '/bill/findBillList',
+            where: { //设定异步数据接口的额外参数，任意设
+                startDate: $("#price_min").val(),
+                endDate: $("#price_max").val(),
+                billType:$("#type").val(),
+                billMode:$("#fangshi").val()
+            }
+        });
+    }
+
+    //时间转换js
+    function formatDateTime(inputTime) {
+        var date = new Date(inputTime);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+    };
+</script>
+
