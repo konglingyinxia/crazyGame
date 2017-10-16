@@ -95,9 +95,17 @@ public class WxController {
 		return "/apps/business/platform/game/wxGetCode/main1";
 	}
 
+	/**
+	 * 微信支付界面
+	 * @param map
+	 * @param orderprices
+     * @return
+     */
 	@RequestMapping(value = "/wxPayHtml")
-	public String wxPayHtml(ModelMap map, String orderprices) {
+	public String wxPayHtml(ModelMap map, String orderprices,String roomNum,String userId) {
+		map.addAttribute("userId", userId);
 		map.addAttribute("orderprices", orderprices);
+		map.addAttribute("roomNum", roomNum);
 		return "/apps/business/platform/game/wxGetCode/WxPay";
 	}
 
@@ -210,10 +218,16 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWXPayXmlH5")
 	@ResponseBody
-	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int orderprices) {
+	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int orderprices,String userId) {
 		Map<String, Object> json = new HashMap<String, Object>();
-		// 获取付款用户id
-		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";// ((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
+		// 获取付款用户openid
+		String openid = playUserRes.findById(userId).getOpenid();
+//		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";
+		if(openid == null){
+			json.put("status",false);
+			json.put("msg","用户不存在！");
+			return json;
+		}
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
 		// 生成32位订单号
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
@@ -257,8 +271,9 @@ public class WxController {
 		try {
 			prepay_id = new GetWxOrderno().getPayNo(createOrderURL, xml);
 			if (prepay_id.equals("")) {
-				request.setAttribute("ErrorMsg", "统一支付接口获取预支付订单出错");
-				response.sendRedirect("error.jsp");
+				json.put("status",false);
+				json.put("msg","订单支付异常！");
+				return json;
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -282,7 +297,7 @@ public class WxController {
 		json.put("nonceStr", nonceStr2);
 		json.put("package", packages);
 		json.put("paySign", finalsign);
-		json.put("status", 200);
+		json.put("status", true);
 		return json;
 
 	}

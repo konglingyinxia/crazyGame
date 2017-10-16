@@ -6,12 +6,13 @@
     <script src="../../../js/mui.min.js?v=1.1"></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        //转换为 分 单位
-        var orderprices = "${orderprices}";
+        var userId = "${userId}";//充值用户id
+        var orderprices = "${orderprices}";//充值金额
+        var roomNum = "${roomNum}";//房卡数量
 
         //调用后台
-        mui.post('/wxController/getWXPayXmlH5',{orderprices:orderprices}, function(data) {
-            if(data.status == 200) {
+        mui.post('/wxController/getWXPayXmlH5',{orderprices:orderprices,userId:userId}, function(data) {
+            if(data.status == true) {
                 console.log(JSON.stringify(data));
                 var appid = data.appid;
                 var timestamp = data.timeStamp;
@@ -36,7 +37,7 @@
                                     //alert("支付成功！")
                                     // 支付成功后 修改订单状态  2代发货
                                     mui.toast("支付成功！");
-                                    mui.post("rechargeManagement",{id:"3ca246781687496a99e4d410a520e11e",payAmount:orderprices,roomCount:"2"},function(data){
+                                    mui.post("rechargeManagement",{id:userId,payAmount:orderprices,roomCount:roomNum},function(data){
 
                                     });
                                 } else if(res.err_msg == "get_brand_wcpay_request:cancel") {
@@ -59,6 +60,8 @@
                 } else {
                     onBridgeReady();
                 }
+            }else{
+                mui.toast(data.msg);
             }
         });
     </script>
