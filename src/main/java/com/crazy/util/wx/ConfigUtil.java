@@ -21,7 +21,7 @@ public class ConfigUtil {
 	public final static String SIGN_TYPE = "MD5";
 
 	/** 微信支付统一接口的回调 */
-	public final static String NOTIFY_URL = "http://game.bizpartner.cn/wxController/wxLoginHtml";
+	public final static String NOTIFY_URL = "http://game.bizpartner.cn/wxController/rechargeManagement";
 	/** oauth2授权接口(GET) */
 	public final static String OAUTH2_URL = "https://open.weixin.qq.com/connect/oauth2/authorize";
 	/** 微信授权code值路径 */

@@ -72,6 +72,12 @@ public class WxController {
 		return "/apps/business/platform/game/wxGetCode/main1";
 	}
 
+	@RequestMapping(value = "/wxPayHtml")
+	public String wxPayHtml(ModelMap map,String orderprices) {
+		map.addAttribute("orderprices", orderprices);
+		return "/apps/business/platform/game/wxGetCode/WxPay";
+	}
+
 	/**
 	 * 微信授权用户信息返回code地址拼接
 	 * 
@@ -184,7 +190,7 @@ public class WxController {
 	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int orderprices) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户id
-		String openid = ((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
+		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";//((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
 		// 生成32位订单号
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
