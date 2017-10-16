@@ -39,6 +39,8 @@
                                     mui.post("rechargeManagement",{id:userId,roomCount:roomNum},function(data){
 
                                     });
+                                    //跳转游戏界面
+                                    window.location.href = data.gameUrl+"?status=true";
                                 } else if(res.err_msg == "get_brand_wcpay_request:cancel") {
                                     mui.toast('取消支付！ ');
                                 } else {

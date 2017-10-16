@@ -301,6 +301,7 @@ public class WxController {
 		json.put("nonceStr", nonceStr2);
 		json.put("package", packages);
 		json.put("paySign", finalsign);
+		json.put("gameUrl", "http://tssb.bizpartner.cn/main/index.html");
 		json.put("status", true);
 		return json;
 
