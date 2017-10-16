@@ -220,7 +220,8 @@ public class WxController {
 	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum, String userId) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户openid
-		String openid = playUserRes.findById(userId).getOpenid();
+		PlayUser playUser = playUserRes.findById(userId);
+		String openid = playUser.getOpenid();
 		// String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";
 		if (openid == null) {
 			json.put("status", false);
@@ -302,6 +303,7 @@ public class WxController {
 		json.put("package", packages);
 		json.put("paySign", finalsign);
 		json.put("gameUrl", "http://tssb.bizpartner.cn/main/index.html");
+		json.put("token", playUser.getToken());
 		json.put("status", true);
 		return json;
 
@@ -311,13 +313,12 @@ public class WxController {
 	 * @Title: rechargeManagement
 	 * @Description: TODO(支付完成后调整数据库)
 	 * @param playUser 用户信息
-	 * @param payAmount 支付金额
 	 * @param roomCount 房卡数量
 	 * @return 设定文件 String 返回类型
 	 */
 	@ResponseBody
 	@RequestMapping("/rechargeManagement")
-	public JSONObject rechargeManagement(@SessionAttribute("mgPlayUser") PlayUser playUser, int roomCount) {
+	public JSONObject rechargeManagement(PlayUser playUser, int roomCount) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
 		Bill bill = new Bill();
