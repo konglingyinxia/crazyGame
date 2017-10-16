@@ -58,9 +58,9 @@ public class BillController extends Handler {
 		try {
 			Pageable pageable = new PageRequest(page - 1, limit);
 			DefaultSpecification<Bill> spec = new DefaultSpecification<Bill>();
-			if (null != bill.getBillType() && !bill.getBillType().equals("")) spec.setParams("billType", "eq", bill.getBillType());
+			if (null != bill.getBillType() && 0 != bill.getBillType()) spec.setParams("billType", "eq", bill.getBillType());
 
-			if (null != bill.getBillMode() && !bill.getBillMode().equals("")) spec.setParams("billMode", "eq", bill.getBillMode());
+			if (null != bill.getBillMode() && !bill.getBillMode().equals("0")) spec.setParams("billMode", "eq", bill.getBillMode());
 
 			if (null != startDate) spec.setParams("billTime", ">=", startDate);
 
