@@ -10,7 +10,7 @@
         var roomNum = "${roomNum}";//房卡数量
 
         //调用后台
-        mui.post('/wxController/getWXPayXmlH5',{orderprices:orderprices,userId:userId,roomNum:roomNum}, function(data) {
+        mui.post('/wxController/getWXPayXmlH5',{userId:userId,roomNum:roomNum}, function(data) {
             if(data.status == true) {
                 console.log(JSON.stringify(data));
                 var appid = data.appid;
