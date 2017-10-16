@@ -40,7 +40,7 @@ public class Bill implements java.io.Serializable {
 	private String userName;
 
 	/**
-	 * 账单类型
+	 * 账单类型1收入2支出
 	 */
 	@Column(name = "BILL_TYPE")
 	private Integer billType;

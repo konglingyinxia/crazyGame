@@ -25,6 +25,7 @@ import com.crazy.web.model.PlayUser;
 import com.crazy.web.model.PresentApp;
 import com.crazy.web.model.ProManagement;
 import com.crazy.web.model.mobileter.murecharge.vo.PresentAppVo;
+import com.crazy.web.service.repository.jpa.MoneyRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
 import com.crazy.web.service.repository.jpa.PresentAppRepository;
 import com.crazy.web.service.repository.jpa.ProManagementRepository;
@@ -49,6 +50,9 @@ public class PresentAppController extends Handler {
 
 	@Autowired
 	private PlayUserRepository playUserRes;
+
+	@Autowired
+	private MoneyRepository moneyRepository;
 
 	/**
 	 * 提现审批
@@ -153,6 +157,12 @@ public class PresentAppController extends Handler {
 
 				// 更新数据库数据结构
 				BigDecimal zjTrtProfit = playUserRes.findById(presentApp.getPlayUserId()).getTrtProfit();
+
+				// 修改账户余额
+				BigDecimal ye = moneyRepository.findById(1).getBalance();
+				ye = ye.subtract(presentApp.getAmountMoney());
+				moneyRepository.setBalanceById(ye, 1);
+
 				zjTrtProfit = zjTrtProfit.subtract(presentApp.getAmountMoney());
 				playUserRes.setTrtProfitById(zjTrtProfit, presentApp.getPlayUserId());// 更新人员剩余分润总额度
 				// 生成提现历史

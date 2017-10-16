@@ -1,18 +1,21 @@
 package com.crazy.web.handler.mobileter.wx;
 
-import com.alibaba.fastjson.JSONObject;
-import com.crazy.core.BMDataContext;
-import com.crazy.util.StateUtils;
-import com.crazy.util.cache.CacheHelper;
-import com.crazy.util.wx.*;
-import com.crazy.web.model.PlayUser;
-import com.crazy.web.model.RoomRechargeRecord;
-import com.crazy.web.model.RunHistory;
-import com.crazy.web.model.WxConfig;
-import com.crazy.web.service.repository.jpa.PlayUserRepository;
-import com.crazy.web.service.repository.jpa.RoomRechargeRecordRepository;
-import com.crazy.web.service.repository.jpa.RunHistoryRepository;
-import com.crazy.web.service.repository.jpa.WxConfigRepository;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +24,29 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.alibaba.fastjson.JSONObject;
+import com.crazy.core.BMDataContext;
+import com.crazy.util.StateUtils;
+import com.crazy.util.cache.CacheHelper;
+import com.crazy.util.wx.ConfigUtil;
+import com.crazy.util.wx.GetWxOrderno;
+import com.crazy.util.wx.PayCommonUtil;
+import com.crazy.util.wx.RequestHandler;
+import com.crazy.util.wx.Sha1Util;
+import com.crazy.web.model.Bill;
+import com.crazy.web.model.Money;
+import com.crazy.web.model.PlayUser;
+import com.crazy.web.model.RoomRechargeRecord;
+import com.crazy.web.model.RunHistory;
+import com.crazy.web.model.WxConfig;
+import com.crazy.web.service.repository.jpa.BillRepository;
+import com.crazy.web.service.repository.jpa.MoneyRepository;
+import com.crazy.web.service.repository.jpa.PlayUserRepository;
+import com.crazy.web.service.repository.jpa.RoomRechargeRecordRepository;
+import com.crazy.web.service.repository.jpa.RunHistoryRepository;
+import com.crazy.web.service.repository.jpa.WxConfigRepository;
 
 /**
  * 类描述：微信授权登录 <br>
@@ -55,6 +72,12 @@ public class WxController {
 	@Autowired
 	private WxConfigRepository wxConfigRepository;
 
+	@Autowired
+	private BillRepository billRepository;
+
+	@Autowired
+	private MoneyRepository moneyRepository;
+
 	/**
 	 * 跳转微信 wxController/wxLoginHtml
 	 * 
@@ -73,7 +96,7 @@ public class WxController {
 	}
 
 	@RequestMapping(value = "/wxPayHtml")
-	public String wxPayHtml(ModelMap map,String orderprices) {
+	public String wxPayHtml(ModelMap map, String orderprices) {
 		map.addAttribute("orderprices", orderprices);
 		return "/apps/business/platform/game/wxGetCode/WxPay";
 	}
@@ -190,7 +213,7 @@ public class WxController {
 	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int orderprices) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户id
-		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";//((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
+		String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";// ((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
 		// 生成32位订单号
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
@@ -274,12 +297,25 @@ public class WxController {
 	 */
 	@ResponseBody
 	@RequestMapping("/rechargeManagement")
-	public JSONObject rechargeManagement(PlayUser playUser, int payAmount, int roomCount) {
+	public JSONObject rechargeManagement(@SessionAttribute("mgPlayUser") PlayUser playUser, int payAmount, int roomCount) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
+		Bill bill = new Bill();
+
 		Double adtaoProfit = Double.valueOf(payAmount / 100);
+		Money money = moneyRepository.findByIdAndType(1, 1);
+		BigDecimal ye = money.getBalance();
+		ye = ye.add(BigDecimal.valueOf(adtaoProfit));// 算出账户余额
+		moneyRepository.setBalanceById(ye, 1);// 修改账户余额
 		try {
 			PlayUser zjPlayUser = playUserRes.findById(playUser.getId());
+
+			// 账单
+			bill.setUserName(zjPlayUser.getNickname());
+			bill.setBillMode("微信");
+			bill.setBillType(1);
+			bill.setIncomeAmount(BigDecimal.valueOf(adtaoProfit));
+			bill.setAccountAmount(ye);
 
 			roomRechargeRecord.setUserName(zjPlayUser.getNickname());
 			roomRechargeRecord.setInvitationCode(zjPlayUser.getInvitationcode());
@@ -345,6 +381,7 @@ public class WxController {
 			roomRechargeRecord.setAdtaoProfit(BigDecimal.valueOf(adtaoProfit));
 			// 保存房卡充值历史
 			roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
+			billRepository.save(bill);
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
