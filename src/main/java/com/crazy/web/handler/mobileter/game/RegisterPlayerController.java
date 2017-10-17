@@ -12,11 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.crazy.util.*;
-import com.crazy.web.model.*;
-import com.crazy.web.service.repository.es.PlayUserClientESRepository;
-import com.crazy.web.service.repository.es.PlayUserESRepository;
-import com.crazy.web.service.repository.jpa.RoomTouseRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,19 +20,34 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.crazy.core.BMDataContext;
+import com.crazy.util.BeanUtils;
+import com.crazy.util.CacheConfigTools;
+import com.crazy.util.GameUtils;
+import com.crazy.util.IP;
+import com.crazy.util.IPTools;
+import com.crazy.util.UKTools;
 import com.crazy.util.cache.CacheHelper;
+import com.crazy.util.twm.QRCodeUtil;
 import com.crazy.util.wx.ConfigUtil;
 import com.crazy.util.wx.WxUserInfo;
 import com.crazy.web.handler.Handler;
+import com.crazy.web.model.AccountConfig;
+import com.crazy.web.model.PlayUser;
+import com.crazy.web.model.PlayUserClient;
+import com.crazy.web.model.RoomRechargeRecord;
+import com.crazy.web.model.RoomTouseRecord;
+import com.crazy.web.model.Token;
 import com.crazy.web.model.mobileter.murecharge.vo.PlayUserVo;
+import com.crazy.web.service.repository.es.PlayUserClientESRepository;
+import com.crazy.web.service.repository.es.PlayUserESRepository;
 import com.crazy.web.service.repository.es.TokenESRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
 import com.crazy.web.service.repository.jpa.RoomRechargeRecordRepository;
+import com.crazy.web.service.repository.jpa.RoomTouseRecordRepository;
 import com.crazy.web.service.repository.spec.DefaultSpecification;
 import com.google.gson.Gson;
 
@@ -55,8 +65,7 @@ public class RegisterPlayerController extends Handler {
 	private PlayUserRepository playUserRes;
 
 	@Autowired
-	private PlayUserClientESRepository playUserClientRes ;
-
+	private PlayUserClientESRepository playUserClientRes;
 
 	@Autowired
 	private PlayUserESRepository playUserESRes;
@@ -76,7 +85,7 @@ public class RegisterPlayerController extends Handler {
 		String result = WxUserInfo.getWxUserInfo(code);// 根据code获取微信用户信息
 		JSONObject jsonObject = (JSONObject) JSON.parse(result);
 		Token userToken = null;
-		PlayUserClient playUserClient = null ;
+		PlayUserClient playUserClient = null;
 		Gson gson = new Gson();
 		try {
 			if (null != jsonObject.get("openid")) {
@@ -99,6 +108,9 @@ public class RegisterPlayerController extends Handler {
 					playUser.setPinvitationcode(invitationcode);
 					playUser.setOrgi(BMDataContext.SYSTEM_ORGI);
 					playUserRes.saveAndFlush(playUser);
+					String text = "http://192.168.199.203/main";
+					// 生成二维码
+					QRCodeUtil.encode(text + "?invitationcode=" + playUser.getInvitationcode(), playUser.getId(), ConfigUtil.imgPath, true);
 					roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
 					map.addAttribute("url", ConfigUtil.GAME_URL + "?userId=" + playUser.getId());
 				} else {
@@ -128,10 +140,10 @@ public class RegisterPlayerController extends Handler {
 				}
 				userToken.setLastlogintime(new Date());
 				userToken.setUpdatetime(new Date(0));
-				playUserClient = playUserClientRes.findById(userToken.getUserid()) ;
-				if(playUserClient==null){
+				playUserClient = playUserClientRes.findById(userToken.getUserid());
+				if (playUserClient == null) {
 					try {
-						playUserClient = register(new PlayUser() , ipdata , request) ;
+						playUserClient = register(new PlayUser(), ipdata, request);
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
@@ -141,8 +153,8 @@ public class RegisterPlayerController extends Handler {
 				playUser.setToken(userToken.getId());
 				playUserClient.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
-				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(),playUserClient, userToken.getOrgi());
-				session.setAttribute("mgPlayUser", playUser);
+				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(), playUserClient, userToken.getOrgi());
+				CacheHelper.getApiUserCacheBean().put(playUser.getId(), playUser, userToken.getOrgi());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -289,17 +301,14 @@ public class RegisterPlayerController extends Handler {
 
 	/**
 	 * 注册用户
+	 * 
 	 * @param player
 	 * @return
 	 * @throws InvocationTargetException
 	 * @throws IllegalAccessException
 	 */
-	public PlayUserClient register(PlayUser player , IP ipdata , HttpServletRequest request ) throws IllegalAccessException, InvocationTargetException{
-		PlayUserClient playUserClient = GameUtils.create(player, ipdata, request) ;
-		int users = playUserESRes.countByUsername(player.getUsername()) ;
-		if(users == 0){
-			UKTools.published(player , playUserESRes , playUserRes);
-		}
-		return playUserClient ;
+	public PlayUserClient register(PlayUser player, IP ipdata, HttpServletRequest request) throws IllegalAccessException, InvocationTargetException {
+		PlayUserClient playUserClient = GameUtils.create(player, ipdata, request);
+		return playUserClient;
 	}
 }

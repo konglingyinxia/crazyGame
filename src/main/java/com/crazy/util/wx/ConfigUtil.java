@@ -1,7 +1,5 @@
 package com.crazy.util.wx;
 
-import java.math.BigDecimal;
-
 /**
  * 类描述：微信相关参数配置 <br>
  * 作者：田帅 <br>
@@ -48,4 +46,7 @@ public class ConfigUtil {
 	 * 一张房卡三块钱
 	 */
 	public final static int ROOM = 3;
+	
+	public static final String imgPath = "G://DaveWorkSpace//games//crazyGame//src//main//twmimg";
+
 }
