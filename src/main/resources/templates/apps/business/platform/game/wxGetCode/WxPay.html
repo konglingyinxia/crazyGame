@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title>微信支付</title>
+    <link href="../../../css/mui.min.css" rel="stylesheet"/>
     <script src="../../../js/mui.min.js?v=1.1"></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
@@ -39,6 +41,7 @@
                                     mui.post("rechargeManagement",{id:userId,roomCount:roomNum,token:data.token},function(datas){
 
                                     });
+
                                     //跳转游戏界面
                                     window.location.href = data.gameUrl+"?status=true&userId="+userId+"&token="+token;
                                 } else if(res.err_msg == "get_brand_wcpay_request:cancel") {
