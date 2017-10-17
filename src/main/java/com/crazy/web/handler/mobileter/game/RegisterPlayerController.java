@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.crazy.web.model.*;
+import com.crazy.web.service.repository.jpa.RoomTouseRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,10 +33,6 @@ import com.crazy.util.cache.CacheHelper;
 import com.crazy.util.wx.ConfigUtil;
 import com.crazy.util.wx.WxUserInfo;
 import com.crazy.web.handler.Handler;
-import com.crazy.web.model.AccountConfig;
-import com.crazy.web.model.PlayUser;
-import com.crazy.web.model.RoomRechargeRecord;
-import com.crazy.web.model.Token;
 import com.crazy.web.model.mobileter.murecharge.vo.PlayUserVo;
 import com.crazy.web.service.repository.es.TokenESRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
@@ -60,6 +58,9 @@ public class RegisterPlayerController extends Handler {
 
 	@Autowired
 	private RoomRechargeRecordRepository roomRechargeRecordRepository;
+
+	@Autowired
+	private RoomTouseRecordRepository roomTouseRecordRepository;
 
 	@RequestMapping("/wxLogin")
 	public String wxLogin(ModelMap map, String code, HttpSession session, String invitationcode, HttpServletRequest request) {
@@ -243,14 +244,20 @@ public class RegisterPlayerController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/deductRoomCard")
-	public JSONObject deductRoomCard(@SessionAttribute("mgPlayUser") PlayUser playUser) {
+	public JSONObject deductRoomCard(PlayUser playUser) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			PlayUser newPlayUser = playUserRes.findByOpenid(playUser.getOpenid());
+			PlayUser newPlayUser = playUserRes.findById(playUser.getId());
+			RoomTouseRecord roomTouseRecord = new RoomTouseRecord();
+			roomTouseRecord.setInvitationCode(newPlayUser.getInvitationcode());
+			roomTouseRecord.setUserName(newPlayUser.getNickname());
+			roomTouseRecord.setUseRoomCount(3);
 			int cards = newPlayUser.getCards() - 3;
+			roomTouseRecord.setSurplusRoomCount(cards);
 			if (cards < 0) {
 				throw new Exception("扣卡失败");
 			}
+			roomTouseRecordRepository.save(roomTouseRecord);
 			playUserRes.setCardsById(cards, newPlayUser.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
