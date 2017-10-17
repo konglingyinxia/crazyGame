@@ -277,6 +277,40 @@
 		    <artifactId>cache2k-core</artifactId>
 		    <version>1.0.1.Final</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>com.jpattern</groupId>
+		    <artifactId>jp-util</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
+        
+        <!-- 二维码 -->
+        <dependency>
+			<groupId>ts.qrcore</groupId>
+			<artifactId>ts.qrcore</artifactId>
+			<version>2.2</version>
+		</dependency>
+		
+		<!-- 二维码 -->
+		<dependency>
+			<groupId>ts.qrcode</groupId>
+			<artifactId>ts.qrcode</artifactId>
+			<version>6.0</version>
+		</dependency>
+		
+		<!-- 二维码 -->
+		<dependency>
+			<groupId>ts.Qrcode_swetake</groupId>
+			<artifactId>ts.Qrcode_swetake</artifactId>
+			<version>6.0</version>
+		</dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.apache.mina/mina-core -->
+		<dependency>
+		    <groupId>org.apache.mina</groupId>
+		    <artifactId>mina-core</artifactId>
+		    <version>3.0.0-M2</version>
+		</dependency>
         
         <dependency>
             <groupId>org.kie</groupId>
