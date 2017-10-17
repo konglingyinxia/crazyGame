@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.Hashtable;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -122,12 +123,16 @@ public class QRCodeUtil {
 	 * @param needCompress
 	 * @throws Exception
 	 */
-	public static void encode(String content, String userId, String imgPath, String destPath, boolean needCompress) throws Exception {
+	public static void encode(String content, String imgPath, String destPath, boolean needCompress) throws Exception {
 		BufferedImage image = QRCodeUtil.createImage(content, imgPath, needCompress);
 		mkdirs(destPath);
-		// String file = new Random().nextInt(99999999) + ".jpg";// 生成随机文件名
-		String file = userId + ".jpg";// 生成随机文件名
+		String file = new Random().nextInt(99999999) + ".jpg";// 生成随机文件名
 		ImageIO.write(image, FORMAT_NAME, new File(destPath + "/" + file));
+	}
+
+	public static BufferedImage getImage(String content) throws Exception {
+		BufferedImage image = QRCodeUtil.createImage(content, null, true);
+		return image;
 	}
 
 	public static void mkdirs(String destPath) {
@@ -138,25 +143,25 @@ public class QRCodeUtil {
 		}
 	}
 
-	public static void encode(String content, String userId, String imgPath, String destPath) throws Exception {
-		QRCodeUtil.encode(content, userId, imgPath, destPath, false);
+	public static void encode(String content, String imgPath, String destPath) throws Exception {
+		QRCodeUtil.encode(content, imgPath, destPath, false);
 	}
 
-	public static void encode(String content, String userId, String destPath, boolean needCompress) throws Exception {
-		QRCodeUtil.encode(content, userId, null, destPath, needCompress);
+	public static void encode(String content, String destPath, boolean needCompress) throws Exception {
+		QRCodeUtil.encode(content, null, destPath, needCompress);
 	}
 
-	public static void encode(String content, String userId, String destPath) throws Exception {
-		QRCodeUtil.encode(content, userId, null, destPath, false);
+	public static void encode(String content, String destPath) throws Exception {
+		QRCodeUtil.encode(content, null, destPath, false);
 	}
 
-	public static void encode(String content, String userId, String imgPath, OutputStream output, boolean needCompress) throws Exception {
+	public static void encode(String content, String imgPath, OutputStream output, boolean needCompress) throws Exception {
 		BufferedImage image = QRCodeUtil.createImage(content, imgPath, needCompress);
 		ImageIO.write(image, FORMAT_NAME, output);
 	}
 
-	public static void encode(String content, String userId, OutputStream output) throws Exception {
-		QRCodeUtil.encode(content, userId, null, output, false);
+	public static void encode(String content, OutputStream output) throws Exception {
+		QRCodeUtil.encode(content, null, output, false);
 	}
 
 	/**

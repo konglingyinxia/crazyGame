@@ -46,7 +46,5 @@ public class ConfigUtil {
 	 * 一张房卡三块钱
 	 */
 	public final static int ROOM = 3;
-	
-	public static final String imgPath = "G://DaveWorkSpace//games//crazyGame//src//main//twmimg";
 
 }

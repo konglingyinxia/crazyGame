@@ -1,5 +1,7 @@
 package com.crazy.web.handler.mobileter.game;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -9,9 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.catalina.connector.OutputBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -108,9 +113,6 @@ public class RegisterPlayerController extends Handler {
 					playUser.setPinvitationcode(invitationcode);
 					playUser.setOrgi(BMDataContext.SYSTEM_ORGI);
 					playUserRes.saveAndFlush(playUser);
-					String text = "http://192.168.199.203/main";
-					// 生成二维码
-					QRCodeUtil.encode(text + "?invitationcode=" + playUser.getInvitationcode(), playUser.getId(), ConfigUtil.imgPath, true);
 					roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
 					map.addAttribute("url", ConfigUtil.GAME_URL + "?userId=" + playUser.getId());
 				} else {
@@ -310,5 +312,25 @@ public class RegisterPlayerController extends Handler {
 	public PlayUserClient register(PlayUser player, IP ipdata, HttpServletRequest request) throws IllegalAccessException, InvocationTargetException {
 		PlayUserClient playUserClient = GameUtils.create(player, ipdata, request);
 		return playUserClient;
+	}
+
+	/**
+	 * @Title: getEWMImage
+	 * @Description: TODO(获取二维码)
+	 * @param userId
+	 * @param response 设定文件 void 返回类型
+	 */
+	@ResponseBody
+	@RequestMapping("/getEWMImage")
+	public void getEWMImage(String userId, HttpServletResponse response) {
+		String invitationcode = playUserRes.findById(userId).getInvitationcode();
+		String text = "http://192.168.199.203/main" + "?invitationcode=" + invitationcode;
+		// 生成二维码
+		try {
+			BufferedImage img = QRCodeUtil.getImage(text);
+			ImageIO.write(img, "JPG", response.getOutputStream());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
