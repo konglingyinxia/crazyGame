@@ -97,9 +97,7 @@ public class RegisterPlayerController extends Handler {
 				PlayUser playUser = gson.fromJson(result, PlayUser.class);
 				PlayUser newPlayUser = playUserRes.findByOpenid(playUser.getOpenid());
 				if (null == newPlayUser) {
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
-					String time = formatter.format(new Date());
-					playUser.setInvitationcode(time);
+					playUser.setInvitationcode(UKTools.getUUID());
 					playUser.setCards(10);
 					RoomRechargeRecord roomRechargeRecord = new RoomRechargeRecord();
 					roomRechargeRecord.setUserName(playUser.getNickname());
