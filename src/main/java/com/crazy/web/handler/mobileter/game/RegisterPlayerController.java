@@ -88,6 +88,7 @@ public class RegisterPlayerController extends Handler {
 					playUser.setTrtProfit(BigDecimal.valueOf(0.00));
 					playUser.setToken(UKTools.getUUID());
 					playUser.setPinvitationcode(invitationcode);
+					playUser.setOrgi(BMDataContext.SYSTEM_ORGI);
 					playUserRes.saveAndFlush(playUser);
 					roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
 					map.addAttribute("url", ConfigUtil.GAME_URL + "?userId=" + playUser.getId());
