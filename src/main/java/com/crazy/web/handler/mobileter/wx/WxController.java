@@ -115,10 +115,13 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getLoginCode")
 	@ResponseBody
-	public String getLoginCode() {
+	public String getLoginCode(String invitationcode) {
 		String oauth2 = ConfigUtil.OAUTH2_URL;
 		String appid = ConfigUtil.APPIDH5;// 公众号appid
 		String redirect_uri = ConfigUtil.CODE_URL;// 返回code值地址
+		if(invitationcode != null && "".equals(invitationcode)){
+			redirect_uri += "%3finvitationcode%3d"+invitationcode;
+		}
 		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
 		return wxLogin;
 	}
