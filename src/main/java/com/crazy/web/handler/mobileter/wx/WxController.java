@@ -24,12 +24,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.alibaba.fastjson.JSONObject;
-import com.crazy.core.BMDataContext;
 import com.crazy.util.StateUtils;
-import com.crazy.util.cache.CacheHelper;
 import com.crazy.util.wx.ConfigUtil;
 import com.crazy.util.wx.GetWxOrderno;
 import com.crazy.util.wx.PayCommonUtil;
@@ -138,7 +135,7 @@ public class WxController {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		try {
 			if (StringUtils.isNotBlank(userId)) {
-				PlayUser playUser = (PlayUser) CacheHelper.getApiUserCacheBean().getCacheObject(userId, BMDataContext.SYSTEM_ORGI);
+				PlayUser playUser = playUserRes.findById(userId);
 				if (null != playUser) {
 					dataMap.put("token", playUser.getToken());
 					dataMap.put("playUser", playUser);
