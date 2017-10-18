@@ -322,7 +322,7 @@ public class RegisterPlayerController extends Handler {
 	@RequestMapping("/getEWMImage")
 	public void getEWMImage(String userId, HttpServletResponse response) {
 		String invitationcode = playUserRes.findById(userId).getInvitationcode();
-		String text = "http://192.168.199.203/main" + "?invitationcode=" + invitationcode;
+		String text = ConfigUtil.GAME_URL + "?invitationcode=" + invitationcode;
 		// 生成二维码
 		try {
 			BufferedImage img = QRCodeUtil.getImage(text);

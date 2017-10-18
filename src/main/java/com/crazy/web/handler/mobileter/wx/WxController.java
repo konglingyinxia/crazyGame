@@ -305,7 +305,7 @@ public class WxController {
 		json.put("nonceStr", nonceStr2);
 		json.put("package", packages);
 		json.put("paySign", finalsign);
-		json.put("gameUrl", "http://192.168.199.203/main");
+		json.put("gameUrl", ConfigUtil.GAME_URL);
 		json.put("token", playUser.getToken());
 		json.put("status", true);
 		return json;
