@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.crazy.util.UKTools;
 import com.crazy.web.handler.Handler;
 import com.crazy.web.model.Bill;
 import com.crazy.web.model.PlayUser;
@@ -124,12 +125,11 @@ public class PresentAppController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/appForCash")
-	public JSONObject appForCash(PresentApp presentApp, @SessionAttribute("mgPlayUser") PlayUser playUser) {
+	public JSONObject appForCash(PresentApp presentApp, String userId) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");
-			String time = formatter.format(new Date());
-			presentApp.setApplicationNum(time);
+			PlayUser playUser = playUserRes.findById(userId);
+			presentApp.setApplicationNum(UKTools.getUUID());
 			presentApp.setUserName(playUser.getNickname());
 			presentApp.setInvitationCode(playUser.getInvitationcode());
 			presentApp.setPlayUserId(playUser.getId());
