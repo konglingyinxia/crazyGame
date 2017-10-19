@@ -115,7 +115,32 @@ public class PayCommonUtil {
 	}
 
 
+	/**
+	 * 是否签名正确,规则是:按参数名称a-z排序,遇到空值的参数不参加签名。
+	 * @return boolean
+	 */
+	public static boolean isTenpaySign(String characterEncoding, SortedMap<Object, Object> packageParams, String API_KEY) {
+		StringBuffer sb = new StringBuffer();
+		Set es = packageParams.entrySet();
+		Iterator it = es.iterator();
+		while(it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			String k = (String)entry.getKey();
+			String v = (String)entry.getValue();
+			if(!"sign".equals(k) && null != v && !"".equals(v)) {
+				sb.append(k + "=" + v + "&");
+			}
+		}
 
+		sb.append("key=" + API_KEY);
+
+		//算出摘要
+		String mysign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toLowerCase();
+		String tenpaySign = ((String)packageParams.get("sign")).toLowerCase();
+
+		//System.out.println(tenpaySign + "    " + mysign);
+		return tenpaySign.equals(mysign);
+	}
 
 	/**
 	 * 获取用户真实IP地址，不使用request.getRemoteAddr();的原因是有可能用户使用了代理软件方式避免真实IP地址,
