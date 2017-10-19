@@ -122,19 +122,19 @@ public class PresentAppController extends Handler {
 	/**
 	 * @Title: runHistoryMySelf
 	 * @Description: TODO(查询自己获得分润的历史)
-	 * @param userId
+	 * @param token
 	 * @param page
 	 * @param limit
 	 * @return 设定文件 JSONObject 返回类型
 	 */
 	@ResponseBody
 	@RequestMapping("/runHistoryMySelf")
-	public JSONObject runHistoryMySelf(String userId, Integer page, Integer limit) {
+	public JSONObject runHistoryMySelf(String token, Integer page, Integer limit) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
 			Pageable pageable = new PageRequest(page, limit);
 			DefaultSpecification<RunHistory> spec = new DefaultSpecification<RunHistory>();
-			String invitationcode = playUserRes.findById(userId).getInvitationcode();
+			String invitationcode = playUserRes.findByToken(token).getInvitationcode();
 			spec.setParams("invitationCode", "eq", invitationcode);
 			Page<RunHistory> p = runHistoryRepository.findAll(spec, pageable);
 			dataMap.put("data", p.getContent());
@@ -156,10 +156,10 @@ public class PresentAppController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/appForCash")
-	public JSONObject appForCash(PresentApp presentApp, String userId) {
+	public JSONObject appForCash(PresentApp presentApp, String token) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			PlayUser playUser = playUserRes.findById(userId);
+			PlayUser playUser = playUserRes.findByToken(token);
 
 			presentApp.setApplicationNum(UKTools.getUUID());
 			presentApp.setUserName(playUser.getNickname());

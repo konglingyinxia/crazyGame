@@ -99,8 +99,8 @@ public class WxController {
 	 * @return
 	 */
 	@RequestMapping(value = "/wxPayHtml")
-	public String wxPayHtml(ModelMap map, String roomNum, String userId) {
-		map.addAttribute("userId", userId);
+	public String wxPayHtml(ModelMap map, String roomNum, String token) {
+		map.addAttribute("token", token);
 		map.addAttribute("roomNum", roomNum);
 		return "/apps/business/platform/game/wxGetCode/WxPay";
 	}
@@ -131,11 +131,11 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWxUserToken")
 	@ResponseBody
-	public Object getWxUserToken(HttpSession session, String userId) {
+	public Object getWxUserToken(HttpSession session, String token) {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		try {
-			if (StringUtils.isNotBlank(userId)) {
-				PlayUser playUser = playUserRes.findById(userId);
+			if (StringUtils.isNotBlank(token)) {
+				PlayUser playUser = playUserRes.findByToken(token);
 				if (null != playUser) {
 					dataMap.put("token", playUser.getToken());
 					dataMap.put("playUser", playUser);
@@ -217,10 +217,10 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWXPayXmlH5")
 	@ResponseBody
-	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum, String userId) {
+	public Object getWXPayXmlH5(HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam(defaultValue = "0") int roomNum, String token) {
 		Map<String, Object> json = new HashMap<String, Object>();
 		// 获取付款用户openid
-		PlayUser playUser = playUserRes.findById(userId);
+		PlayUser playUser = playUserRes.findByToken(token);
 		String openid = playUser.getOpenid();
 		// String openid = "oTGVJtwV_U8M9jUS9aLk36iA_wys";
 		if (openid == null) {
@@ -418,11 +418,11 @@ public class WxController {
 	 */
 	@RequestMapping("/wxTransfersAmount")
 	@ResponseBody
-	public Object wxTransfersAmount(String userId, HttpSession session, HttpServletRequest request) {
+	public Object wxTransfersAmount(String token, HttpSession session, HttpServletRequest request) {
 		SortedMap<Object, Object> signParams = new TreeMap<Object, Object>();
 		// 获取付款用户id
 		// String openid = ((PlayUser) session.getAttribute("mgPlayUser")).getOpenid();// 获取用户id
-		String openid = playUserRes.findById(userId).getOpenid();// 获取用户id
+		String openid = playUserRes.findByToken(token).getOpenid();// 获取用户id
 
 		// 生成32位订单号
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMHHmmssSSS");

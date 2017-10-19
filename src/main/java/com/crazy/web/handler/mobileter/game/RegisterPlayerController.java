@@ -313,13 +313,13 @@ public class RegisterPlayerController extends Handler {
 	/**
 	 * @Title: getEWMImage
 	 * @Description: TODO(获取二维码)
-	 * @param userId
+	 * @param token
 	 * @param response 设定文件 void 返回类型
 	 */
 	@ResponseBody
 	@RequestMapping("/getEWMImage")
-	public void getEWMImage(String userId, HttpServletResponse response) {
-		String invitationcode = playUserRes.findById(userId).getInvitationcode();
+	public void getEWMImage(String token, HttpServletResponse response) {
+		String invitationcode = playUserRes.findByToken(token).getInvitationcode();
 		String text = ConfigUtil.GAME_URL + "?invitationcode=" + invitationcode;
 		// 生成二维码
 		try {
