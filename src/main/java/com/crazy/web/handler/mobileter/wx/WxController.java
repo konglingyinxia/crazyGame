@@ -131,11 +131,11 @@ public class WxController {
 	 */
 	@RequestMapping(value = "/getWxUserToken")
 	@ResponseBody
-	public Object getWxUserToken(HttpSession session, String token) {
+	public Object getWxUserToken(HttpSession session, String userId) {
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		try {
-			if (StringUtils.isNotBlank(token)) {
-				PlayUser playUser = playUserRes.findByToken(token);
+			if (StringUtils.isNotBlank(userId)) {
+				PlayUser playUser = playUserRes.findById(userId);
 				if (null != playUser) {
 					dataMap.put("token", playUser.getToken());
 					dataMap.put("playUser", playUser);

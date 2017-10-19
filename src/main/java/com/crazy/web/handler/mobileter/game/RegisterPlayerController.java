@@ -152,7 +152,7 @@ public class RegisterPlayerController extends Handler {
 				playUserRes.saveAndFlush(playUser);
 				playUserClient.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
-				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(), playUserClient, userToken.getOrgi());
+				CacheHelper.getApiUserCacheBean().put(userToken.getUserid(), playUserClient, userToken.getOrgi());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
