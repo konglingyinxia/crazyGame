@@ -59,13 +59,21 @@
             page:true,
             id:'test',
             cols:  [[ //标题栏
-                {field:'id', width:260 , title:'序号'},
+                {field:'id', width:150 , title:'序号'},
                 {field:'userName',width:260 , title:'用户名'},
                 {field:'invitationCode',width:260 , title:'邀请码'},
                 {field:'getProfitAmount',width:260 , title:'获得分润金额'},
                 {field:'sourceName',width:260 , title:'来源账号ID'},
-                {field:'sourceId',width:262 , title:'获得时间'}
-            ]]
+                {field:'getProfitTime',width:262 , title:'获得时间'}
+            ]],
+            done:  function(res, curr, count){
+                var tableTr = document.getElementsByClassName("layui-table")[1].children[0].getElementsByTagName("tr");
+                for(var i = 0; i < tableTr.length; i++){
+                    //编码
+                    tableTr[i].children[0].children[0].innerHTML = i+1;
+                    tableTr[i].children[5].children[0].innerHTML = formatDateTime(res.data[i].getProfitTime);
+                }
+            }
         });
     });
     function queryTj(){
@@ -79,6 +87,23 @@
             }
         });
     }
+
+    //时间转换js
+    function formatDateTime(inputTime) {
+        var date = new Date(inputTime);
+        var y = date.getFullYear();
+        var m = date.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = date.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = date.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = date.getMinutes();
+        var second = date.getSeconds();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+    };
 </script>
 
 
