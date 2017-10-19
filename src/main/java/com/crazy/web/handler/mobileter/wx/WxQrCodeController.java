@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 类描述：微信授权登录 <br>
+ * 类描述：微信扫码相关功能 <br>
  * 作者：田帅 <br>
  * 创建时间：2017-09-16 <br>
  * 版本：V1.0
