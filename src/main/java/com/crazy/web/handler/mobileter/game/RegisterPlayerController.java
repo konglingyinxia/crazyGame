@@ -107,10 +107,8 @@ public class RegisterPlayerController extends Handler {
 					roomRechargeRecord.setDirectlyTheLastAmount(BigDecimal.valueOf(0.00));
 					roomRechargeRecord.setIndirectTheLastAmount(BigDecimal.valueOf(0.00));
 					playUser.setTrtProfit(BigDecimal.valueOf(0.00));
-					playUser.setToken(UKTools.getUUID());
 					playUser.setPinvitationcode(invitationcode);
 					playUser.setOrgi(BMDataContext.SYSTEM_ORGI);
-					playUserRes.saveAndFlush(playUser);
 					roomRechargeRecordRepository.saveAndFlush(roomRechargeRecord);
 					map.addAttribute("url", ConfigUtil.GAME_URL + "?userId=" + playUser.getId());
 				} else {
@@ -151,10 +149,10 @@ public class RegisterPlayerController extends Handler {
 
 				tokenESRes.save(userToken);
 				playUser.setToken(userToken.getId());
+				playUserRes.saveAndFlush(playUser);
 				playUserClient.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
 				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(), playUserClient, userToken.getOrgi());
-				CacheHelper.getApiUserCacheBean().put(playUser.getId(), playUser, userToken.getOrgi());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
