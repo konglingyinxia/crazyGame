@@ -38,7 +38,7 @@ public class ConfigUtil {
 	public final static String QR_CODE_NOTIFY_URL = "http://game.bizpartner.cn/wxQrCodeController/weixin_notify";
 
 	/** 跳转游戏界面地址 */
-	public final static String GAME_URL = "http://192.168.199.203/main";
+	public final static String GAME_URL = "http://game.bizpartner.cn/main";
 
 	/** 充值房卡数量4张对应价格 */
 	public final static double ROOM_4 = 0.01;
