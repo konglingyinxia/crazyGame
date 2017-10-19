@@ -8,11 +8,11 @@
     <script src="../../../js/mui.min.js?v=1.2"></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
     <script>
-        var userId = "${userId}";//充值用户id
+        var token = "${token}";//充值用户id
         var roomNum = "${roomNum}";//房卡数量
 
         //调用后台
-        mui.post('/wxController/getWXPayXmlH5',{userId:userId,roomNum:roomNum}, function(data) {
+        mui.post('/wxController/getWXPayXmlH5',{token:token,roomNum:roomNum}, function(data) {
             if(data.status == true) {
                 console.log(JSON.stringify(data));
                 var appid = data.appid;
@@ -37,7 +37,7 @@
                                 if(res.err_msg == "get_brand_wcpay_request:ok") {
                                     //alert("支付成功！")
                                     // 支付成功后 修改订单状态  2代发货
-                                    mui.post("/wxController/rechargeManagement",{id:userId,roomCount:roomNum,token:data.token},function(datas){
+                                    mui.post("/wxController/rechargeManagement",{token:token,roomCount:roomNum,token:data.token},function(datas){
 
                                     });
                                     mui.alert('支付成功', '提示', function() {
