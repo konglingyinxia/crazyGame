@@ -304,6 +304,7 @@ public class WxController {
 		json.put("paySign", finalsign);
 		json.put("gameUrl", ConfigUtil.GAME_URL);
 		json.put("token", playUser.getToken());
+		json.put("userId", playUser.getId());
 		json.put("status", true);
 		return json;
 
