@@ -1,7 +1,6 @@
 package com.crazy.web.handler.mobileter.transact;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
@@ -26,12 +24,14 @@ import com.crazy.web.model.Bill;
 import com.crazy.web.model.PlayUser;
 import com.crazy.web.model.PresentApp;
 import com.crazy.web.model.ProManagement;
+import com.crazy.web.model.RunHistory;
 import com.crazy.web.model.mobileter.murecharge.vo.PresentAppVo;
 import com.crazy.web.service.repository.jpa.BillRepository;
 import com.crazy.web.service.repository.jpa.MoneyRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
 import com.crazy.web.service.repository.jpa.PresentAppRepository;
 import com.crazy.web.service.repository.jpa.ProManagementRepository;
+import com.crazy.web.service.repository.jpa.RunHistoryRepository;
 import com.crazy.web.service.repository.spec.DefaultSpecification;
 import com.google.gson.Gson;
 
@@ -59,6 +59,9 @@ public class PresentAppController extends Handler {
 
 	@Autowired
 	private BillRepository billRepository;
+
+	@Autowired
+	private RunHistoryRepository runHistoryRepository;
 
 	/**
 	 * 提现审批
@@ -117,6 +120,34 @@ public class PresentAppController extends Handler {
 	}
 
 	/**
+	 * @Title: runHistoryMySelf
+	 * @Description: TODO(查询自己获得分润的历史)
+	 * @param userId
+	 * @param page
+	 * @param limit
+	 * @return 设定文件 JSONObject 返回类型
+	 */
+	@ResponseBody
+	@RequestMapping("/runHistoryMySelf")
+	public JSONObject runHistoryMySelf(String userId, Integer page, Integer limit) {
+		Map<Object, Object> dataMap = new HashMap<Object, Object>();
+		try {
+			Pageable pageable = new PageRequest(page, limit);
+			DefaultSpecification<RunHistory> spec = new DefaultSpecification<RunHistory>();
+			String invitationcode = playUserRes.findById(userId).getInvitationcode();
+			spec.setParams("invitationCode", "eq", invitationcode);
+			Page<RunHistory> p = runHistoryRepository.findAll(spec, pageable);
+			dataMap.put("data", p.getContent());
+			dataMap.put("count", p.getTotalElements());
+		} catch (Exception e) {
+			e.printStackTrace();
+			dataMap.put("success", false);
+			dataMap.put("msg", "查询失败");
+		}
+		return (JSONObject) JSONObject.toJSON(dataMap);
+	}
+
+	/**
 	 * @Title: appForCash
 	 * @Description: TODO(申请提现)
 	 * @param presentApp 接收对象
@@ -129,12 +160,17 @@ public class PresentAppController extends Handler {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
 			PlayUser playUser = playUserRes.findById(userId);
+
 			presentApp.setApplicationNum(UKTools.getUUID());
 			presentApp.setUserName(playUser.getNickname());
 			presentApp.setInvitationCode(playUser.getInvitationcode());
 			presentApp.setPlayUserId(playUser.getId());
 			presentApp.setOpenid(playUser.getOpenid());
-			presentAppRepository.saveAndFlush(presentApp);
+			presentAppRepository.saveAndFlush(presentApp);// 提现申请
+
+			BigDecimal trtProfit = playUser.getTrtProfit().subtract(presentApp.getAmountMoney());// 去掉申请提现的金额剩余的分润金额
+			playUserRes.setTrtProfitAndPpAmountById(trtProfit, presentApp.getAmountMoney(), playUser.getId());// 修改剩余的分润金额和待通过的金额
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
@@ -161,7 +197,7 @@ public class PresentAppController extends Handler {
 				// 企业打钱接口。。。。。
 
 				// 更新数据库数据结构
-				BigDecimal zjTrtProfit = playUserRes.findById(presentApp.getPlayUserId()).getTrtProfit();
+				BigDecimal zjTrtProfit = playUserRes.findById(presentApp.getPlayUserId()).getPpAmount();
 
 				// 修改账户余额
 				BigDecimal ye = moneyRepository.findById(1).getBalance();
@@ -169,7 +205,8 @@ public class PresentAppController extends Handler {
 				moneyRepository.setBalanceById(ye, 1);
 
 				zjTrtProfit = zjTrtProfit.subtract(presentApp.getAmountMoney());
-				playUserRes.setTrtProfitById(zjTrtProfit, presentApp.getPlayUserId());// 更新人员剩余分润总额度
+				playUserRes.setPpAmountById(zjTrtProfit, presentApp.getPlayUserId());// 更新人员待审批分润金额总额度
+
 				// 生成提现历史
 				ProManagement pm = new ProManagement();
 				pm.setUserName(presentApp.getUserName());
