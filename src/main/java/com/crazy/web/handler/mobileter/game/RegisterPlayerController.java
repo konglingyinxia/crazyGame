@@ -283,8 +283,8 @@ public class RegisterPlayerController extends Handler {
 			RoomTouseRecord roomTouseRecord = new RoomTouseRecord();
 			roomTouseRecord.setInvitationCode(newPlayUser.getInvitationcode());
 			roomTouseRecord.setUserName(newPlayUser.getNickname());
-			roomTouseRecord.setUseRoomCount(3);
-			int cards = newPlayUser.getCards() - 3;
+			roomTouseRecord.setUseRoomCount(1);
+			int cards = newPlayUser.getCards() - 1;
 			roomTouseRecord.setSurplusRoomCount(cards);
 			if (cards < 0) {
 				throw new Exception("扣卡失败");

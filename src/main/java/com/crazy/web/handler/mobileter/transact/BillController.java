@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -56,7 +58,7 @@ public class BillController extends Handler {
 	public JSONObject findBillList(Bill bill, Integer page, Integer limit, Date startDate, Date endDate) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			Pageable pageable = new PageRequest(page - 1, limit);
+			Pageable pageable = new PageRequest(page - 1, limit,new Sort(Direction.DESC, "billTime"));
 			DefaultSpecification<Bill> spec = new DefaultSpecification<Bill>();
 			if (null != bill.getBillType() && 0 != bill.getBillType()) spec.setParams("billType", "eq", bill.getBillType());
 
