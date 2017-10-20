@@ -26,6 +26,7 @@ import com.crazy.web.model.PresentApp;
 import com.crazy.web.model.ProManagement;
 import com.crazy.web.model.RunHistory;
 import com.crazy.web.model.mobileter.murecharge.vo.PresentAppVo;
+import com.crazy.web.model.vo.RunSummaryVo;
 import com.crazy.web.service.repository.jpa.BillRepository;
 import com.crazy.web.service.repository.jpa.MoneyRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
@@ -111,6 +112,37 @@ public class PresentAppController extends Handler {
 			dataMap.put("data", p.getContent());
 			dataMap.put("count", p.getTotalElements());
 			dataMap.put("code", 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+			dataMap.put("success", false);
+			dataMap.put("msg", "查询失败");
+		}
+		return (JSONObject) JSONObject.toJSON(dataMap);
+	}
+
+	/**
+	 * @Title: runSummary
+	 * @Description: TODO(分润汇总)
+	 * @param token
+	 * @return 设定文件 JSONObject 返回类型
+	 */
+	@ResponseBody
+	@RequestMapping("/runSummary")
+	public JSONObject runSummary(String token) {
+		Map<Object, Object> dataMap = new HashMap<Object, Object>();
+		RunSummaryVo runSummaryVo = new RunSummaryVo();
+		try {
+			PlayUser playUser = playUserRes.findByToken(token);
+			if (null != playUser) {
+				runSummaryVo.setTrtProfit(playUser.getTrtProfit());
+				runSummaryVo.setPpAmount(playUser.getPpAmount() == null ? BigDecimal.valueOf(0.00) : playUser.getPpAmount());
+				int num = playUserRes.countByPinvitationcode(playUser.getInvitationcode());
+				runSummaryVo.setSubCount(num);
+				BigDecimal sumAmountMoney = proManagementRepository.sumAmountMoneyByInvitationcode(playUser.getInvitationcode());
+				runSummaryVo.setAmountPaid(sumAmountMoney == null ? BigDecimal.valueOf(0.00) : sumAmountMoney);
+			}
+
+			dataMap.put("data", runSummaryVo);
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
