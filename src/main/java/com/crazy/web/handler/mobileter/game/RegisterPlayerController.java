@@ -141,7 +141,7 @@ public class RegisterPlayerController extends Handler {
 				playUserClient = playUserClientRes.findById(userToken.getUserid());
 				if (playUserClient == null) {
 					try {
-						playUserClient = register(new PlayUser(), ipdata, request);
+						playUserClient = register(playUser, ipdata, request);
 					} catch (IllegalAccessException | InvocationTargetException e) {
 						e.printStackTrace();
 					}
@@ -152,7 +152,7 @@ public class RegisterPlayerController extends Handler {
 				playUserRes.saveAndFlush(playUser);
 				playUserClient.setToken(userToken.getId());
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
-				CacheHelper.getApiUserCacheBean().put(userToken.getUserid(), playUserClient, userToken.getOrgi());
+				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(), playUserClient, userToken.getOrgi());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
