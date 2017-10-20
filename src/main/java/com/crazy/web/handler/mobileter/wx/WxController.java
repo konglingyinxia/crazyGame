@@ -330,7 +330,7 @@ public class WxController {
 		ye = ye.add(BigDecimal.valueOf(adtaoProfit));// 算出账户余额
 		moneyRepository.setBalanceById(ye, 1);// 修改账户余额
 		try {
-			PlayUser zjPlayUser = playUserRes.findById(playUser.getId());
+			PlayUser zjPlayUser = playUserRes.findByToken(playUser.getToken());
 
 			// 账单
 			bill.setUserName(zjPlayUser.getNickname());

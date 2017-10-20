@@ -134,8 +134,11 @@ public class PresentAppController extends Handler {
 		try {
 			Pageable pageable = new PageRequest(page, limit);
 			DefaultSpecification<RunHistory> spec = new DefaultSpecification<RunHistory>();
-			String invitationcode = playUserRes.findByToken(token).getInvitationcode();
-			spec.setParams("invitationCode", "eq", invitationcode);
+			PlayUser playUser = playUserRes.findByToken(token);
+			if (null != playUser) {
+				String invitationcode = playUser.getInvitationcode();
+				spec.setParams("invitationCode", "eq", invitationcode);
+			}
 			Page<RunHistory> p = runHistoryRepository.findAll(spec, pageable);
 			dataMap.put("data", p.getContent());
 			dataMap.put("count", p.getTotalElements());
