@@ -151,6 +151,7 @@ public class RegisterPlayerController extends Handler {
 				playUser.setToken(userToken.getId());
 				playUserRes.saveAndFlush(playUser);
 				playUserClient.setToken(userToken.getId());
+				playUserClientRes.save(playUserClient);
 				CacheHelper.getApiUserCacheBean().put(userToken.getId(), userToken, userToken.getOrgi());
 				CacheHelper.getApiUserCacheBean().put(playUserClient.getId(), playUserClient, userToken.getOrgi());
 			}
@@ -319,12 +320,16 @@ public class RegisterPlayerController extends Handler {
 	@ResponseBody
 	@RequestMapping("/getEWMImage")
 	public void getEWMImage(String token, HttpServletResponse response) {
-		String invitationcode = playUserRes.findByToken(token).getInvitationcode();
-		String text = ConfigUtil.GAME_URL + "?invitationcode=" + invitationcode;
-		// 生成二维码
+
 		try {
-			BufferedImage img = QRCodeUtil.getImage(text);
-			ImageIO.write(img, "JPG", response.getOutputStream());
+			PlayUser playUser = playUserRes.findByToken(token);
+			if (null != playUser) {
+				String invitationcode = playUser.getInvitationcode();
+				String text = ConfigUtil.GAME_URL + "?invitationcode=" + invitationcode;
+				// 生成二维码
+				BufferedImage img = QRCodeUtil.getImage(text);
+				ImageIO.write(img, "JPG", response.getOutputStream());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

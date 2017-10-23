@@ -205,7 +205,7 @@ public class PresentAppController extends Handler {
 
 			BigDecimal trtProfit = playUser.getTrtProfit().subtract(presentApp.getAmountMoney());// 去掉申请提现的金额剩余的分润金额
 			playUserRes.setTrtProfitAndPpAmountById(trtProfit, presentApp.getAmountMoney(), playUser.getId());// 修改剩余的分润金额和待通过的金额
-
+			dataMap.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
