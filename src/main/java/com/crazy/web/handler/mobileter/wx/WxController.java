@@ -350,7 +350,7 @@ public class WxController {
 			adtaoProfit = adtaoProfit - ziFenrun;
 			BigDecimal zjTrtProfit = zjPlayUser.getTrtProfit();
 			zjTrtProfit = zjTrtProfit.add(BigDecimal.valueOf(ziFenrun));
-			playUserRes.setCardsAndTrtProfitById(cards, zjTrtProfit, playUser.getId());// 修改充值完的房卡数量
+			playUserRes.setCardsAndTrtProfitById(cards, zjTrtProfit, zjPlayUser.getId());// 修改充值完的房卡数量
 
 			// 保存自己分润历史
 			RunHistory zjRunHistory = new RunHistory();

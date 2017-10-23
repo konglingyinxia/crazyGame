@@ -4,7 +4,11 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.crazy.util.UKTools;
 
@@ -47,6 +51,11 @@ public class GameMode implements java.io.Serializable {
 	private Integer online;
 
 	/**
+	 * 是否在游戏中0否1是
+	 */
+	private Integer ingame;
+
+	/**
 	 * 周赛卡
 	 */
 	@Column(name = "week_game_card")
@@ -76,6 +85,10 @@ public class GameMode implements java.io.Serializable {
 	@Column(name = "is_del")
 	private Integer isDel;
 
+	@Id
+	@Column(length = 32)
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "assigned")
 	public String getId() {
 		return id;
 	}
@@ -162,6 +175,14 @@ public class GameMode implements java.io.Serializable {
 
 	public void setIsDel(Integer isDel) {
 		this.isDel = isDel;
+	}
+
+	public Integer getIngame() {
+		return ingame;
+	}
+
+	public void setIngame(Integer ingame) {
+		this.ingame = ingame;
 	}
 
 }
