@@ -22,7 +22,8 @@ public class UKWebAppConfigurer
                         "/tokens",
                         "/registerPlayer/**",
                         "/presentapp/**",
-                        "/wxController/**"
+                        "/wxController/**",
+                        "/record/**"
                 );
     	registry.addInterceptor(new CrossInterceptorHandler()).addPathPatterns("/**");
         super.addInterceptors(registry);

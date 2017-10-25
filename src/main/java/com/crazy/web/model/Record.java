@@ -28,7 +28,7 @@ public class Record implements java.io.Serializable {
 	 * 玩家id
 	 */
 	@Column(name = "playuser_id")
-	private String playUserId;
+	private String playuserId;
 
 	/**
 	 * 房间号
@@ -123,6 +123,14 @@ public class Record implements java.io.Serializable {
 
 	public void setIsDel(Integer isDel) {
 		this.isDel = isDel;
+	}
+
+	public String getPlayuserId() {
+		return playuserId;
+	}
+
+	public void setPlayuserId(String playuserId) {
+		this.playuserId = playuserId;
 	}
 
 }

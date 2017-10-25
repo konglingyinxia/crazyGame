@@ -164,7 +164,7 @@ public class PresentAppController extends Handler {
 	public JSONObject runHistoryMySelf(String token, Integer page, Integer limit) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			Pageable pageable = new PageRequest(page, limit);
+			Pageable pageable = new PageRequest(page - 1, limit);
 			DefaultSpecification<RunHistory> spec = new DefaultSpecification<RunHistory>();
 			PlayUser playUser = playUserRes.findByToken(token);
 			if (null != playUser) {
