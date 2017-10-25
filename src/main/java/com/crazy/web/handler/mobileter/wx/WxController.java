@@ -1,5 +1,6 @@
 package com.crazy.web.handler.mobileter.wx;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -121,6 +122,23 @@ public class WxController {
 		}
 		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
 		return wxLogin;
+	}
+
+	@RequestMapping(value = "/toWXAuth")
+	public String toWXAuth(HttpServletResponse response, String invitationcode) {
+		String oauth2 = ConfigUtil.OAUTH2_URL;
+		String appid = ConfigUtil.APPIDH5;// 公众号appid
+		String redirect_uri = ConfigUtil.CODE_URL;// 返回code值地址
+		if (invitationcode != null && !"".equals(invitationcode)) {
+			redirect_uri += "%3finvitationcode%3d" + invitationcode;
+		}
+		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		try {
+			response.sendRedirect(wxLogin);
+		} catch (IOException e) {
+			logger.error(e) ;
+		}
+		return "login";
 	}
 
 	/**
