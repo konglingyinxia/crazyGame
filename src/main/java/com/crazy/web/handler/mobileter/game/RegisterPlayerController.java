@@ -275,21 +275,22 @@ public class RegisterPlayerController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/deductRoomCard")
-	public JSONObject deductRoomCard(PlayUser playUser) {
+	public JSONObject deductRoomCard(PlayUser playUser, int buckle) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			PlayUser newPlayUser = playUserRes.findById(playUser.getId());
+			PlayUser newPlayUser = playUserRes.findByToken(playUser.getToken());
 			RoomTouseRecord roomTouseRecord = new RoomTouseRecord();
 			roomTouseRecord.setInvitationCode(newPlayUser.getInvitationcode());
 			roomTouseRecord.setUserName(newPlayUser.getNickname());
-			roomTouseRecord.setUseRoomCount(1);
-			int cards = newPlayUser.getCards() - 1;
+			roomTouseRecord.setUseRoomCount(buckle);
+			int cards = newPlayUser.getCards() - buckle;
 			roomTouseRecord.setSurplusRoomCount(cards);
 			if (cards < 0) {
 				throw new Exception("扣卡失败");
 			}
 			roomTouseRecordRepository.save(roomTouseRecord);
 			playUserRes.setCardsById(cards, newPlayUser.getId());
+			dataMap.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
