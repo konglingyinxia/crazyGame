@@ -47,7 +47,7 @@ public abstract interface PlayUserRepository extends JpaRepository<PlayUser, Str
 	@Modifying
 	@Transactional
 	public abstract void setTrtProfitById(@Param("trtProfit") BigDecimal trtProfit, @Param("id") String id);
-	
+
 	@Query(value = "update bm_playuser set PP_AMOUNT = :trtProfit,UPDATETIME = now() where id = :id", nativeQuery = true)
 	@Modifying
 	@Transactional
@@ -69,4 +69,14 @@ public abstract interface PlayUserRepository extends JpaRepository<PlayUser, Str
 	@Modifying
 	@Transactional
 	public abstract void setTrtProfitAndPpAmountById(@Param("trtProfit") BigDecimal trtProfit, @Param("ppAmount") BigDecimal ppAmount, @Param("id") String id);
+
+	@Query(value = "update bm_playuser set ROOM_NUM = :roomNum WHERE ID = :id", nativeQuery = true)
+	@Modifying
+	@Transactional
+	public abstract void setRoomNumById(@Param("roomNum") String roomNum, @Param("id") String id);
+
+	@Query(value = "update bm_playuser set ROOM_NUM = NULL WHERE ID = :id", nativeQuery = true)
+	@Modifying
+	@Transactional
+	public abstract void emptyRoomById(@Param("id") String id);
 }

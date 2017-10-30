@@ -41,7 +41,7 @@ public class RecordController extends Handler {
 	 */
 	@ResponseBody
 	@RequestMapping("/perRecord")
-	private String perRecord(String token, Integer page, Integer limit) {
+	private String perRecord(String token, Integer gameType, Integer page, Integer limit) {
 		Gson gson = new Gson();
 		Map<String, Object> dataMap = new HashMap<String, Object>();
 		try {
@@ -50,6 +50,7 @@ public class RecordController extends Handler {
 				Pageable pageable = new PageRequest(page - 1, limit, new Sort(Direction.DESC, "time"));
 				DefaultSpecification<Record> spec = new DefaultSpecification<Record>();
 				spec.setParams("playuserId", "eq", playUser.getId());
+				spec.setParams("gameType", "eq", gameType);
 				Page<Record> p = recordRepository.findAll(spec, pageable);
 				dataMap.put("data", p.getContent());
 				dataMap.put("count", p.getTotalElements());
