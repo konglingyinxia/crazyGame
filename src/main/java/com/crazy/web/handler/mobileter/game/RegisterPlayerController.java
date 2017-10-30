@@ -1,10 +1,8 @@
 package com.crazy.web.handler.mobileter.game;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.connector.OutputBuffer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,7 +45,6 @@ import com.crazy.web.model.RoomTouseRecord;
 import com.crazy.web.model.Token;
 import com.crazy.web.model.mobileter.murecharge.vo.PlayUserVo;
 import com.crazy.web.service.repository.es.PlayUserClientESRepository;
-import com.crazy.web.service.repository.es.PlayUserESRepository;
 import com.crazy.web.service.repository.es.TokenESRepository;
 import com.crazy.web.service.repository.jpa.PlayUserRepository;
 import com.crazy.web.service.repository.jpa.RoomRechargeRecordRepository;
@@ -72,8 +68,9 @@ public class RegisterPlayerController extends Handler {
 	@Autowired
 	private PlayUserClientESRepository playUserClientRes;
 
-	@Autowired
-	private PlayUserESRepository playUserESRes;
+	/*
+	 * @Autowired private PlayUserESRepository playUserESRes;
+	 */
 
 	@Autowired
 	private TokenESRepository tokenESRes;
@@ -204,9 +201,15 @@ public class RegisterPlayerController extends Handler {
 				if (null != puv.getPinvitationcode()) {
 					String supAccount = playUserRes.findByInvitationcode(puv.getPinvitationcode()).getNickname();
 					puv.setSupAccount(supAccount);
+				} else {
+					puv.setSupAccount("0");
 				}
-				int subCount = playUserRes.countByPinvitationcode(puv.getInvitationcode());
-				puv.setSubCount(String.valueOf(subCount));
+				if (null != puv.getInvitationcode()) {
+					int subCount = playUserRes.countByPinvitationcode(puv.getInvitationcode());
+					puv.setSubCount(String.valueOf(subCount));
+				} else {
+					puv.setSubCount("0");
+				}
 				puolist.add(puv);
 			}
 			dataMap.put("data", puolist);
@@ -321,7 +324,6 @@ public class RegisterPlayerController extends Handler {
 	@ResponseBody
 	@RequestMapping("/getEWMImage")
 	public void getEWMImage(String token, HttpServletResponse response) {
-
 		try {
 			PlayUser playUser = playUserRes.findByToken(token);
 			if (null != playUser) {
@@ -334,5 +336,31 @@ public class RegisterPlayerController extends Handler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @Title: buildRoomState
+	 * @Description: TODO(查询个人房间用户信息)
+	 * @param token
+	 * @param roomNum
+	 * @return 设定文件 String 返回类型
+	 */
+	@ResponseBody
+	@RequestMapping("/findUserRoom")
+	public JSONObject findUserRoom(String token) {
+		Map<Object, Object> dataMap = new HashMap<Object, Object>();
+		try {
+			Token userToken = (Token) CacheHelper.getApiUserCacheBean().getCacheObject(token, BMDataContext.SYSTEM_ORGI);
+			if (userToken != null) {
+				PlayUserClient playUser = (PlayUserClient) CacheHelper.getApiUserCacheBean().getCacheObject(userToken.getUserid(), userToken.getOrgi());
+				String roomid = (String) CacheHelper.getRoomMappingCacheBean().getCacheObject(playUser.getId(), playUser.getOrgi());
+				dataMap.put("roomid", roomid);
+			}
+			dataMap.put("success", true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			dataMap.put("success", false);
+		}
+		return (JSONObject) JSONObject.toJSON(dataMap);
 	}
 }

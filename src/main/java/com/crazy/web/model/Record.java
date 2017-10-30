@@ -48,6 +48,12 @@ public class Record implements java.io.Serializable {
 	private Date time;
 
 	/**
+	 * 游戏类别
+	 */
+	@Column(name = "game_type")
+	private Integer gameType;
+
+	/**
 	 * 玩家游戏信息
 	 */
 	@Column(name = "gamer_info")
@@ -131,6 +137,14 @@ public class Record implements java.io.Serializable {
 
 	public void setPlayuserId(String playuserId) {
 		this.playuserId = playuserId;
+	}
+
+	public Integer getGameType() {
+		return gameType;
+	}
+
+	public void setGameType(Integer gameType) {
+		this.gameType = gameType;
 	}
 
 }
