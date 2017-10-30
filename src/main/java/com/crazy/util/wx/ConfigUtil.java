@@ -42,11 +42,19 @@ public class ConfigUtil {
 
 	/** 充值房卡数量4张对应价格 */
 	public final static double ROOM_4 = 0.01;
-	/** 充值房卡数量8张对应价格 */
-	public final static double ROOM_8 = 0.02;
-	/** 充值房卡数量12张对应价格 */
-	public final static double ROOM_12 = 0.03;
 
+	/** 充值房卡数量2张对应价格 */
+	public final static double ROOM_2 = 0.02;
+	/** 充值房卡数量5张对应价格 */
+	public final static double ROOM_5 = 0.05;
+	/** 充值房卡数量10张对应价格 */
+	public final static double ROOM_10 = 0.10;
+	/** 充值房卡数量20张对应价格 */
+	public final static double ROOM_20 = 0.20;
+	/** 充值房卡数量50张对应价格 */
+	public final static double ROOM_50 = 0.50;
+	/** 充值房卡数量100张对应价格 */
+	public final static double ROOM_100 = 1.00;
 	/**
 	 * 一张房卡三块钱
 	 */

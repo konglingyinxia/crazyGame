@@ -253,8 +253,8 @@ public class WxController {
 		int finalmoney = 0;
 		if (roomNum == 4) {
 			finalmoney = (int) (ConfigUtil.ROOM_4 * 100);
-		} else if (roomNum == 8) {
-			finalmoney = (int) (ConfigUtil.ROOM_8 * 100);
+		} else if (roomNum == 5) {
+			finalmoney = (int) (ConfigUtil.ROOM_5 * 100);
 		}
 		// 金额转化为分为单位
 		request.getSession();
