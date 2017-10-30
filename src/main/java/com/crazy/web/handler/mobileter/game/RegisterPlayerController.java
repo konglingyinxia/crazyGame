@@ -340,51 +340,27 @@ public class RegisterPlayerController extends Handler {
 
 	/**
 	 * @Title: buildRoomState
-	 * @Description: TODO(保存房间状态)
+	 * @Description: TODO(查询个人房间用户信息)
 	 * @param token
 	 * @param roomNum
 	 * @return 设定文件 String 返回类型
 	 */
 	@ResponseBody
-	@RequestMapping("/buildRoomState")
-	public String buildRoomState(String token, String roomNum) {
-		Gson gson = new Gson();
+	@RequestMapping("/findUserRoom")
+	public JSONObject findUserRoom(String token) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			PlayUser playUser = playUserRes.findByToken(token);
-			if (null != playUser) {
-				playUserRes.setRoomNumById(roomNum, playUser.getId());
-				dataMap.put("success", true);
+			Token userToken = (Token) CacheHelper.getApiUserCacheBean().getCacheObject(token, BMDataContext.SYSTEM_ORGI);
+			if (userToken != null) {
+				PlayUserClient playUser = (PlayUserClient) CacheHelper.getApiUserCacheBean().getCacheObject(userToken.getUserid(), userToken.getOrgi());
+				String roomid = (String) CacheHelper.getRoomMappingCacheBean().getCacheObject(playUser.getId(), playUser.getOrgi());
+				dataMap.put("roomid", roomid);
 			}
+			dataMap.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
 			dataMap.put("success", false);
 		}
-		return gson.toJson(dataMap);
-	}
-
-	/**
-	 * @Title: emptyRoom
-	 * @Description: TODO(置空房间号)
-	 * @param token
-	 * @param roomNum
-	 * @return 设定文件 String 返回类型
-	 */
-	@ResponseBody
-	@RequestMapping("/emptyRoom")
-	public String emptyRoom(String token) {
-		Gson gson = new Gson();
-		Map<Object, Object> dataMap = new HashMap<Object, Object>();
-		try {
-			PlayUser playUser = playUserRes.findByToken(token);
-			if (null != playUser) {
-				playUserRes.emptyRoomById(playUser.getId());
-				dataMap.put("success", true);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			dataMap.put("success", false);
-		}
-		return gson.toJson(dataMap);
+		return (JSONObject) JSONObject.toJSON(dataMap);
 	}
 }
