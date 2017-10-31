@@ -120,7 +120,7 @@ public class WxController {
 		if (invitationcode != null && !"".equals(invitationcode)) {
 			redirect_uri += "%3finvitationcode%3d" + invitationcode;
 		}
-		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
 		return wxLogin;
 	}
 
@@ -132,7 +132,7 @@ public class WxController {
 		if (invitationcode != null && !"".equals(invitationcode)) {
 			redirect_uri += "%3finvitationcode%3d" + invitationcode;
 		}
-		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect";
+		String wxLogin = oauth2 + "?appid=" + appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
 		try {
 			response.sendRedirect(wxLogin);
 		} catch (IOException e) {

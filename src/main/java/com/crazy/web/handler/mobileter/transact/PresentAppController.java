@@ -164,7 +164,7 @@ public class PresentAppController extends Handler {
 	public JSONObject runHistoryMySelf(String token, Integer page, Integer limit) {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
-			Pageable pageable = new PageRequest(page, limit);
+			Pageable pageable = new PageRequest(page - 1, limit);
 			DefaultSpecification<RunHistory> spec = new DefaultSpecification<RunHistory>();
 			PlayUser playUser = playUserRes.findByToken(token);
 			if (null != playUser) {
@@ -195,16 +195,17 @@ public class PresentAppController extends Handler {
 		Map<Object, Object> dataMap = new HashMap<Object, Object>();
 		try {
 			PlayUser playUser = playUserRes.findByToken(token);
-
-			presentApp.setApplicationNum(UKTools.getUUID());
-			presentApp.setUserName(playUser.getNickname());
-			presentApp.setInvitationCode(playUser.getInvitationcode());
-			presentApp.setPlayUserId(playUser.getId());
-			presentApp.setOpenid(playUser.getOpenid());
-			presentAppRepository.saveAndFlush(presentApp);// 提现申请
-
-			BigDecimal trtProfit = playUser.getTrtProfit().subtract(presentApp.getAmountMoney());// 去掉申请提现的金额剩余的分润金额
-			playUserRes.setTrtProfitAndPpAmountById(trtProfit, presentApp.getAmountMoney(), playUser.getId());// 修改剩余的分润金额和待通过的金额
+			if(null != playUser){
+				presentApp.setApplicationNum(UKTools.getUUID());
+				presentApp.setUserName(playUser.getNickname());
+				presentApp.setInvitationCode(playUser.getInvitationcode());
+				presentApp.setPlayUserId(playUser.getId());
+				presentApp.setOpenid(playUser.getOpenid());
+				presentAppRepository.saveAndFlush(presentApp);// 提现申请
+				
+				BigDecimal trtProfit = playUser.getTrtProfit().subtract(presentApp.getAmountMoney());// 去掉申请提现的金额剩余的分润金额
+				playUserRes.setTrtProfitAndPpAmountById(trtProfit, presentApp.getAmountMoney(), playUser.getId());// 修改剩余的分润金额和待通过的金额
+			}
 			dataMap.put("success", true);
 		} catch (Exception e) {
 			e.printStackTrace();
