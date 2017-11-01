@@ -44,7 +44,34 @@ public class ApiRoomController {
         if ( null == gameRoom ) {
             return "{}";
         } else {
-            return "{\"room\":\"" + room + "\",\"code\":\"" + gameRoom.getCode() + "\",\"playway\":\"" + gameRoom.getPlayway() + "\"}";
+            return "{\"room\":\"" + roomId + "\",\"code\":\"" + gameRoom.getCode() + "\",\"playway\":\"" + gameRoom.getPlayway() + "\"}";
+        }
+    }
+
+    /**
+     * 游戏断开后重连的接口查询方法，此处可以获取到用户是否正在参与某个类型的房间的游戏，如果正在参与则返回参与中的房间信息
+     * @param map 参数集合
+     * @param token 令牌
+     * @return 返回客户端的对象数组
+     */
+    @RequestMapping({"/api/room/reConnection"})
+    @ResponseBody
+    public String reConnection(ModelMap map , @RequestParam("token") String token) {
+        Token userToken = (Token) CacheHelper.getApiUserCacheBean().getCacheObject(token, BMDataContext.SYSTEM_ORGI) ;
+        PlayUserClient userClient = (PlayUserClient) CacheHelper.getApiUserCacheBean().getCacheObject(userToken.getUserid(), userToken.getOrgi()) ;
+        String room = (String) CacheHelper.getRoomMappingCacheBean().getCacheObject(userClient.getId(), userClient.getOrgi()) ;
+
+        //创建房间号，并返回客户端
+        String roomId = (String) CacheHelper.getBoardCacheBean().getCacheObject(room+"RoomCard", userToken.getOrgi()) ;
+        if(roomId != null){
+        	GameRoom gameRoom = (GameRoom) CacheHelper.getGameRoomCacheBean().getCacheObject(roomId, userToken.getOrgi()) ;
+            if ( null == gameRoom ) {
+                return "{}";
+            } else {
+                return "{\"room\":\"" + roomId + "\",\"code\":\"" + gameRoom.getCode() + "\",\"playway\":\"" + gameRoom.getPlayway() + "\"}";
+            }
+        }else{
+        	 return "{}";
         }
     }
 
