@@ -251,10 +251,14 @@ public class WxController {
 		String out_trade_no = "YX" + formatter.format(new Date());// 充值订单号时间戳
 		out_trade_no += formatter.format(new Date());// 充值订单号时间戳
 		int finalmoney = 0;
-		if (roomNum == 4) {
-			finalmoney = (int) (ConfigUtil.ROOM_4 * 100);
+		if (roomNum == 1) {
+			finalmoney = (int) (ConfigUtil.ROOM_1 * 100);
 		} else if (roomNum == 5) {
 			finalmoney = (int) (ConfigUtil.ROOM_5 * 100);
+		} else if (roomNum == 10) {
+			finalmoney = (int) (ConfigUtil.ROOM_10 * 100);
+		} else if (roomNum == 50) {
+			finalmoney = (int) (ConfigUtil.ROOM_50 * 100);
 		}
 		// 金额转化为分为单位
 		request.getSession();
