@@ -96,14 +96,15 @@ public class ApiRoomController {
 
         //创建房间号，并返回客户端
         String roomId = (String) CacheHelper.getBoardCacheBean().getCacheObject(room+"RoomCard", userToken.getOrgi()) ;
-        if ( null == roomId ) {
-            roomId = room ;
-        }
-        GameRoom gameRoom = (GameRoom) CacheHelper.getGameRoomCacheBean().getCacheObject(roomId, userToken.getOrgi()) ;
-        if ( null == gameRoom ) {
-            return "{}";
-        } else {
-            return "{\"room\":\"" + roomId + "\",\"code\":\"" + gameRoom.getCode() + "\",\"playway\":\"" + gameRoom.getPlayway() + "\"}";
+        if(roomId != null){
+        	GameRoom gameRoom = (GameRoom) CacheHelper.getGameRoomCacheBean().getCacheObject(roomId, userToken.getOrgi()) ;
+            if ( null == gameRoom ) {
+                return "{}";
+            } else {
+                return "{\"room\":\"" + roomId + "\",\"code\":\"" + gameRoom.getCode() + "\",\"playway\":\"" + gameRoom.getPlayway() + "\"}";
+            }
+        }else{
+        	 return "{}";
         }
     }
 
